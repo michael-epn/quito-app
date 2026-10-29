@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import type { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, map, of } from 'rxjs';
+import { catchError, map, of, timeout } from 'rxjs';
 import type { Observable } from 'rxjs';
 
 interface OpenMeteoResponse {
@@ -64,6 +63,7 @@ export class WeatherService {
       .set('current', 'temperature_2m,precipitation,weather_code');
 
     return this.http.get<OpenMeteoResponse>(this.forecastUrl, { params }).pipe(
+      timeout({ first: 8000 }),
       map(({ current }) => ({
         temperatura: current.temperature_2m,
         precipitacion: current.precipitation,
@@ -71,7 +71,7 @@ export class WeatherService {
         alertaLluvia: current.precipitation > 5,
         error: false,
       })),
-      catchError((error: HttpErrorResponse) => {
+      catchError((error: unknown) => {
         console.error('Error al consultar el clima actual.', error);
         return of({
           temperatura: null,

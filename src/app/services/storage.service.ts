@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import type { Incidencia } from '../models/incidencia.model';
-
-type BorradorIncidencia = Partial<Omit<Incidencia, 'id'>>;
+import type { BorradorIncidencia } from '../models/incidencia.model';
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {

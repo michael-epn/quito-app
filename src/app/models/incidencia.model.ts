@@ -19,3 +19,11 @@ export interface Incidencia {
   longitud: number;
   observacion: string;
 }
+
+export type BorradorIncidencia = Partial<Omit<Incidencia, 'id' | 'latitud' | 'longitud'>> & {
+  latitud?: number | null;
+  longitud?: number | null;
+};
+
+export type NuevaIncidencia = Omit<Incidencia, 'id' | 'latitud' | 'longitud'> &
+  Partial<Pick<Incidencia, 'latitud' | 'longitud'>>;

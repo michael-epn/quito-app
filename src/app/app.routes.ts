@@ -32,7 +32,7 @@ export const routes: Routes = [
   {
     path: 'nueva-incidencia',
     loadComponent: () =>
-      import('./nueva-incidencia/nueva-incidencia.page').then((module) => module.NuevaIncidenciaPage),
+      import('./nueva-incidencia/registro-incidencia.page').then((module) => module.RegistroIncidenciaPage),
   },
   {
     path: '**',

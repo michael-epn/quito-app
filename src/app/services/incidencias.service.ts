@@ -5,7 +5,7 @@ import { EMPTY, catchError, expand, reduce, throwError } from 'rxjs';
 import type { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import type { EstadoIncidencia, Incidencia } from '../models/incidencia.model';
+import type { EstadoIncidencia, Incidencia, NuevaIncidencia } from '../models/incidencia.model';
 
 @Injectable({ providedIn: 'root' })
 export class IncidenciasService {
@@ -33,7 +33,7 @@ export class IncidenciasService {
     );
   }
 
-  crearIncidencia(incidencia: Omit<Incidencia, 'id'>): Observable<Incidencia> {
+  crearIncidencia(incidencia: NuevaIncidencia): Observable<Incidencia> {
     return this.http
       .post<Incidencia>(this.incidenciasUrl, incidencia)
       .pipe(catchError(this.manejarError('crear incidencia')));

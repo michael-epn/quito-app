@@ -1,0 +1,155 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/incidencias"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nueva incidencia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="registrar()">
+    <ion-item>
+      <ion-select label="Tipo de incidencia" labelPlacement="stacked" formControlName="tipo" interface="popover">
+        @for (tipo of tipos; track tipo) {
+        <ion-select-option [value]="tipo">{{ tipo | titlecase }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea
+        label="Descripción"
+        labelPlacement="stacked"
+        formControlName="descripcion"
+        rows="3"
+        required
+      ></ion-textarea>
+    </ion-item>
+    @if (form.controls.descripcion.invalid && form.controls.descripcion.touched) {
+    <p class="field-error">La descripción es obligatoria.</p>
+    }
+
+    <ion-item>
+      <ion-input label="Dirección" labelPlacement="stacked" formControlName="direccion" required></ion-input>
+    </ion-item>
+    @if (form.controls.direccion.invalid && form.controls.direccion.touched) {
+    <p class="field-error">La dirección es obligatoria.</p>
+    }
+
+    <ion-item>
+      <ion-input label="Sector" labelPlacement="stacked" formControlName="sector" required></ion-input>
+    </ion-item>
+    @if (form.controls.sector.invalid && form.controls.sector.touched) {
+    <p class="field-error">El sector es obligatorio.</p>
+    }
+
+    <ion-item>
+      <ion-select label="Prioridad" labelPlacement="stacked" formControlName="prioridad">
+        @for (prioridad of prioridades; track prioridad) {
+        <ion-select-option [value]="prioridad">{{ prioridad | titlecase }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <section class="photo-section">
+      <ion-button type="button" fill="outline" (click)="tomarFotografia()">
+        <ion-icon slot="start" name="camera-outline" aria-hidden="true"></ion-icon>
+        {{ form.controls.fotografia.value ? 'Cambiar fotografía' : 'Tomar fotografía' }}
+      </ion-button>
+      @if (form.controls.prioridad.value === 'alta') {
+      <p class="helper-text">La fotografía es obligatoria para prioridad alta.</p>
+      } @if (form.controls.fotografia.value) {
+      <ion-img
+        class="photo-preview"
+        [src]="form.controls.fotografia.value"
+        alt="Previsualización de la fotografía"
+      ></ion-img>
+      } @if (form.controls.fotografia.invalid && form.controls.fotografia.touched) {
+      <p class="field-error">Añade una fotografía para poder registrar una prioridad alta.</p>
+      }
+    </section>
+
+    <section class="location-section">
+      <h2>Ubicación</h2>
+      <ion-button type="button" fill="outline" [disabled]="consultandoGps" (click)="obtenerUbicacion()">
+        <ion-icon slot="start" name="locate-outline" aria-hidden="true"></ion-icon>
+        {{ consultandoGps ? 'Obteniendo ubicación…' : 'Usar ubicación GPS' }}
+      </ion-button>
+      @if (mensajeGps) {
+      <p class="helper-text" role="status">{{ mensajeGps }}</p>
+      }
+
+      <div class="coordinates">
+        <ion-item>
+          <ion-input
+            label="Latitud"
+            labelPlacement="stacked"
+            type="number"
+            inputmode="decimal"
+            formControlName="latitud"
+            (ionInput)="normalizarCoordenada('latitud', $event)"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Longitud"
+            labelPlacement="stacked"
+            type="number"
+            inputmode="decimal"
+            formControlName="longitud"
+            (ionInput)="normalizarCoordenada('longitud', $event)"
+          ></ion-input>
+        </ion-item>
+      </div>
+      @if (form.controls.tipo.value === 'baches' && (form.controls.latitud.touched || form.controls.longitud.touched)) {
+      @if (form.controls.latitud.hasError('required') || form.controls.latitud.hasError('min') ||
+      form.controls.latitud.hasError('max')) {
+      <p class="field-error">La latitud es obligatoria y debe estar entre -90 y 90.</p>
+      } @if (form.controls.longitud.hasError('required') || form.controls.longitud.hasError('min') ||
+      form.controls.longitud.hasError('max')) {
+      <p class="field-error">La longitud es obligatoria y debe estar entre -180 y 180.</p>
+      } }
+    </section>
+
+    @if (consultandoClima) {
+    <div class="weather-feedback" role="status">
+      <ion-spinner name="crescent"></ion-spinner>
+      <span>Consultando el clima…</span>
+    </div>
+    } @else if (clima?.error) {
+    <ion-card color="medium">
+      <ion-card-content>{{ clima.mensajeError }}</ion-card-content>
+    </ion-card>
+    } @else if (clima) {
+    <ion-card [color]="clima.alertaLluvia ? 'warning' : 'light'">
+      <ion-card-content>
+        <ion-label>
+          <strong>Clima actual:</strong> {{ clima.temperatura }} °C · {{ clima.precipitacion }} mm/1h · {{
+          clima.descripcion }}
+        </ion-label>
+        @if (clima.alertaLluvia) {
+        <p class="rain-warning">Las condiciones podrían dificultar el mantenimiento</p>
+        }
+      </ion-card-content>
+    </ion-card>
+    }
+
+    <ion-item>
+      <ion-textarea
+        label="Observación (opcional)"
+        labelPlacement="stacked"
+        formControlName="observacion"
+        rows="2"
+      ></ion-textarea>
+    </ion-item>
+
+    @if (error) {
+    <p class="error-message" role="alert">{{ error }}</p>
+    }
+
+    <ion-button expand="block" type="submit" [disabled]="guardando || consultandoClima">
+      {{ guardando ? 'Registrando…' : 'Registrar incidencia' }}
+    </ion-button>
+  </form>
+</ion-content>
