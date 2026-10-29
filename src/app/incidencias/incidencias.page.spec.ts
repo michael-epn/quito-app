@@ -64,6 +64,11 @@ describe('IncidenciasPage', () => {
     expect(fixture.componentInstance.incidencias()).toEqual(registros);
     expect(fixture.nativeElement.textContent).toContain('INC-001');
     expect(fixture.nativeElement.textContent).toContain('Av. Amazonas');
+    expect(fixture.componentInstance.idIncidencia(registros[0])).toBe('1');
+    expect(fixture.componentInstance.codigoIncidencia(registros[0])).toBe('INC-001');
+    const buttons = fixture.nativeElement.querySelectorAll('ion-button') as NodeListOf<HTMLElement>;
+    const detailButton = Array.from(buttons).find((button) => button.textContent?.includes('Ver detalle'));
+    expect(detailButton?.getAttribute('href')).toBe('/incidencia/1');
   });
 
   it('marks and unmarks an incidence using local storage only', () => {

@@ -26,7 +26,7 @@
     <ion-card-content>
       <div class="title-row">
         <div>
-          <p class="codigo">Código {{ incidencia.id }}</p>
+          <p class="codigo">Código {{ incidencia.codigo || incidencia.id }}</p>
           <h1>{{ incidencia.tipo | titlecase }}</h1>
         </div>
         <ion-button

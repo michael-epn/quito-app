@@ -146,7 +146,11 @@ export class IncidenciasPage implements OnInit {
   }
 
   codigoIncidencia(incidencia: Incidencia): string {
-    return identificadoresIncidencia(incidencia)[0] ?? '';
+    return incidencia.codigo?.trim() || String(incidencia.id).trim();
+  }
+
+  idIncidencia(incidencia: Incidencia): string {
+    return String(incidencia.id).trim();
   }
 
   colorEstado(estado: EstadoIncidencia): string {

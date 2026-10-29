@@ -29,6 +29,7 @@ import { addIcons } from 'ionicons';
 import { bookmark, bookmarkOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 
+import { identificadoresIncidencia } from '../models/incidencia.model';
 import type { EstadoIncidencia, Incidencia } from '../models/incidencia.model';
 import { IncidenciasService } from '../services/incidencias.service';
 import { StorageService } from '../services/storage.service';
@@ -91,7 +92,7 @@ export class DetalleIncidenciaPage implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((parametros) => {
       const id = parametros.get('id');
-      console.log('ID de incidencia recibido en la ruta:', id);
+      console.log('Identificador de incidencia recibido en la ruta:', id);
       if (id === null) {
         this.cargando.set(false);
         this.error.set(true);
@@ -179,7 +180,7 @@ export class DetalleIncidenciaPage implements OnInit {
       observacion: this.form.controls.observacion.value.trim(),
     };
 
-    this.incidenciasService.reemplazarIncidencia(this.incidencia.id, actualizada).subscribe({
+    this.incidenciasService.reemplazarIncidencia(String(this.incidencia.id), actualizada).subscribe({
       next: (resultado) => {
         this.incidencia = resultado;
         this.form.reset({ estado: resultado.estado, observacion: resultado.observacion ?? '' });
@@ -201,13 +202,14 @@ export class DetalleIncidenciaPage implements OnInit {
     }
 
     try {
+      const identificadores = identificadoresIncidencia(this.incidencia);
       if (this.seguimiento) {
-        this.storageService.eliminarCodigoSeguimiento(this.incidencia.id);
+        identificadores.forEach((identificador) => this.storageService.eliminarCodigoSeguimiento(identificador));
         this.seguimiento = false;
         return;
       }
 
-      this.storageService.guardarCodigoSeguimiento(this.incidencia.id);
+      identificadores.forEach((identificador) => this.storageService.guardarCodigoSeguimiento(identificador));
       this.seguimiento = true;
     } catch (error) {
       console.error('No se pudo actualizar el seguimiento local de la incidencia.', error);
@@ -249,7 +251,9 @@ export class DetalleIncidenciaPage implements OnInit {
     }
 
     try {
-      this.seguimiento = this.storageService.estaEnSeguimiento(this.incidencia.id);
+      this.seguimiento = identificadoresIncidencia(this.incidencia).some((identificador) =>
+        this.storageService.estaEnSeguimiento(identificador),
+      );
     } catch (error) {
       console.error('No se pudo consultar el seguimiento local de la incidencia.', error);
       this.mensajeError = 'No se pudo consultar el seguimiento guardado en este dispositivo.';

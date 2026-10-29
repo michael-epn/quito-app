@@ -20,7 +20,7 @@
     <h2>Sin incidencias</h2>
     <p>Aún no hay reportes para mostrar.</p>
   </div>
-  } @for (incidencia of incidencias(); track codigoIncidencia(incidencia)) {
+  } @for (incidencia of incidencias(); track idIncidencia(incidencia)) {
   <ion-card>
     <ion-card-content>
       <div class="card-heading">
@@ -57,7 +57,7 @@
 
       <div class="card-footer">
         <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
-        <ion-button size="small" fill="clear" [routerLink]="['/incidencia', codigoIncidencia(incidencia)]">
+        <ion-button size="small" fill="clear" [routerLink]="['/incidencia', idIncidencia(incidencia)]">
           Ver detalle
         </ion-button>
       </div>

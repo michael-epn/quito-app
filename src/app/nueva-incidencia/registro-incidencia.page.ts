@@ -214,6 +214,10 @@ export class RegistroIncidenciaPage {
   }
 
   async registrar(): Promise<void> {
+    if (this.guardando) {
+      return;
+    }
+
     this.error = '';
     this.form.markAllAsTouched();
 
@@ -233,8 +237,12 @@ export class RegistroIncidenciaPage {
     const { latitud: _latitud, longitud: _longitud, ...valores } = this.form.getRawValue();
     const incidencia: NuevaIncidencia = {
       ...valores,
+      descripcion: valores.descripcion.trim(),
+      direccion: valores.direccion.trim(),
+      sector: valores.sector.trim(),
+      observacion: valores.observacion.trim(),
       ...(coordenadas ?? {}),
-      fecha: new Date().toISOString().slice(0, 10),
+      fecha: this.fechaActual(),
       estado: 'pendiente',
     };
 
@@ -261,7 +269,7 @@ export class RegistroIncidenciaPage {
       descripcion: this.formBuilder.nonNullable.control('', Validators.required),
       direccion: this.formBuilder.nonNullable.control('', Validators.required),
       sector: this.formBuilder.nonNullable.control('', Validators.required),
-      fecha: this.formBuilder.nonNullable.control(new Date().toISOString().slice(0, 10)),
+      fecha: this.formBuilder.nonNullable.control(this.fechaActual()),
       estado: this.formBuilder.nonNullable.control<EstadoIncidencia>('pendiente'),
       prioridad: this.formBuilder.nonNullable.control<PrioridadIncidencia>('media', Validators.required),
       fotografia: this.formBuilder.nonNullable.control(''),
@@ -269,6 +277,13 @@ export class RegistroIncidenciaPage {
       longitud: new FormControl<number | null>(null),
       observacion: this.formBuilder.nonNullable.control(''),
     });
+  }
+
+  private fechaActual(): string {
+    const ahora = new Date();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    return `${ahora.getFullYear()}-${mes}-${dia}`;
   }
 
   private aplicarValidadoresDinamicos(): void {
