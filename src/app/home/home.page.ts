@@ -1,5 +1,6 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -18,6 +19,7 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline } from 'ionicons/icons';
+import { finalize } from 'rxjs';
 
 import type { EstadoIncidencia, Incidencia } from '../models/incidencia.model';
 import { IncidenciasService } from '../services/incidencias.service';
@@ -44,39 +46,69 @@ import { IncidenciasService } from '../services/incidencias.service';
     TitleCasePipe,
   ],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   private readonly incidenciasService = inject(IncidenciasService);
+  private primeraEntrada = true;
+  private readonly cargaEnCurso = signal(false);
+
   readonly estados: EstadoIncidencia[] = ['pendiente', 'en proceso', 'resuelta'];
-  readonly totales: Record<EstadoIncidencia, number> = {
+  readonly totales = signal<Record<EstadoIncidencia, number>>({
     pendiente: 0,
     'en proceso': 0,
     resuelta: 0,
-  };
-  cargando = false;
-  error = false;
+  });
+  readonly cargando = signal(false);
+  readonly error = signal(false);
 
   constructor() {
     addIcons({ addOutline });
   }
 
+  ngOnInit(): void {
+    this.cargarIndicadores();
+  }
+
   ionViewWillEnter(): void {
-    this.cargando = true;
-    this.error = false;
-    this.incidenciasService.obtenerTodasLasIncidencias().subscribe({
-      next: (incidencias) => {
-        this.actualizarTotales(incidencias);
-        this.cargando = false;
-      },
-      error: () => {
-        this.error = true;
-        this.cargando = false;
-      },
-    });
+    if (this.primeraEntrada) {
+      this.primeraEntrada = false;
+      return;
+    }
+
+    this.cargarIndicadores();
+  }
+
+  reintentar(): void {
+    this.cargarIndicadores();
+  }
+
+  private cargarIndicadores(): void {
+    if (this.cargaEnCurso()) {
+      return;
+    }
+
+    this.cargando.set(true);
+    this.cargaEnCurso.set(true);
+    this.error.set(false);
+
+    this.incidenciasService
+      .obtenerTodasLasIncidencias()
+      .pipe(
+        finalize(() => {
+          this.cargando.set(false);
+          this.cargaEnCurso.set(false);
+        }),
+      )
+      .subscribe({
+        next: (incidencias) => this.actualizarTotales(incidencias),
+        error: () => this.error.set(true),
+      });
   }
 
   private actualizarTotales(incidencias: Incidencia[]): void {
-    this.totales.pendiente = incidencias.filter((incidencia) => incidencia.estado === 'pendiente').length;
-    this.totales['en proceso'] = incidencias.filter((incidencia) => incidencia.estado === 'en proceso').length;
-    this.totales.resuelta = incidencias.filter((incidencia) => incidencia.estado === 'resuelta').length;
+    this.totales.set({
+      pendiente: incidencias.filter((incidencia) => incidencia.estado === 'pendiente').length,
+      'en proceso': incidencias.filter((incidencia) => incidencia.estado === 'en proceso').length,
+      resuelta: incidencias.filter((incidencia) => incidencia.estado === 'resuelta').length,
+    });
   }
 }

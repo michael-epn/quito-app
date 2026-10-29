@@ -23,13 +23,13 @@ Aplicación móvil para registrar y consultar incidencias de infraestructura urb
    npm ci
    ```
 
-3. Configura la URL de MockAPI en `src/environments/environment.ts` y `src/environments/environment.prod.ts`:
+3. La URL de MockAPI ya está configurada en `src/environments/environment.ts` y `src/environments/environment.prod.ts`:
 
    ```ts
-   mockApiUrl: 'https://<project-id>.mockapi.io/api/v1',
+   mockApiUrl: 'https://6ae2b569bbb54129229a4f14.mockapi.io',
    ```
 
-   La aplicación añade `/incidencias` a esta URL. Sustituye `<project-id>` por el identificador real de MockAPI antes de ejecutar o compilar.
+   `IncidenciasService` añade `/incidencias`, por lo que consulta `https://6ae2b569bbb54129229a4f14.mockapi.io/incidencias`. El endpoint contiene los 25 registros iniciales de prueba.
 
 4. Inicia el servidor de desarrollo:
 
@@ -118,7 +118,7 @@ En `android/app/src/main/AndroidManifest.xml`, dentro de `<manifest>` y fuera de
 - **Seguimiento y borradores locales:** `StorageService` guarda `seguimiento_ids` y `borrador_incidencia` en `localStorage` sin requerir conectividad. En una aplicación exclusivamente nativa se puede migrar el backend a `@capacitor/preferences`; ese cambio requiere adaptar sus métodos a la API asíncrona de Preferences.
 - **Fotografías:** Camera devuelve una imagen `DataUrl` con calidad reducida y ancho máximo de 600 px. El formulario envía esa cadena Base64 junto con el registro a MockAPI, evitando permisos de almacenamiento compartido y simplificando el prototipo. Base64 incrementa el tamaño del contenido y MockAPI no es almacenamiento de imágenes: para producción conviene subir la imagen comprimida a almacenamiento de objetos y guardar en la incidencia solo una URL. Evita capturar imágenes de alta resolución o incluir datos personales innecesarios.
 - **Clima:** Open-Meteo ofrece pronóstico y condiciones actuales por coordenadas sin API key. `WeatherService` consulta temperatura, precipitación y código WMO; la aplicación avisa cuando la precipitación supera 5 mm, pero una caída o demora del servicio no bloquea el registro.
-- **Configuración del backend:** la URL MockAPI de los entornos sigue como marcador `<project-id>` en este repositorio. Reemplázala antes de usar la app. No guardes credenciales ni secretos en el cliente móvil.
+- **Configuración del backend:** la URL MockAPI configurada apunta al recurso `incidencias` de UrbanInspect. No guardes credenciales ni secretos en el cliente móvil.
 
 ## Scripts disponibles
 

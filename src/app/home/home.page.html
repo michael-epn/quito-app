@@ -8,16 +8,16 @@
   <h1>Estado de incidencias</h1>
   <p>Resumen actualizado de los reportes de infraestructura urbana.</p>
 
-  @if (cargando) {
+  @if (cargando()) {
   <div class="feedback" role="status">
     <ion-spinner name="crescent"></ion-spinner>
     <span>Cargando indicadores…</span>
   </div>
-  } @else if (error) {
+  } @else if (error()) {
   <ion-card color="danger">
     <ion-card-content>
       No se pudieron cargar los indicadores.
-      <ion-button fill="clear" color="light" (click)="ionViewWillEnter()">Reintentar</ion-button>
+      <ion-button fill="clear" color="light" (click)="reintentar()">Reintentar</ion-button>
     </ion-card-content>
   </ion-card>
   } @else {
@@ -28,7 +28,7 @@
         <ion-card-title>{{ estado | titlecase }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <strong>{{ totales[estado] }}</strong>
+        <strong>{{ totales()[estado] }}</strong>
         <span>incidencias</span>
       </ion-card-content>
     </ion-card>
