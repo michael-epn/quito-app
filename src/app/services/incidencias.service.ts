@@ -15,9 +15,18 @@ export class IncidenciasService {
   obtenerIncidencias(page = 1, limit = 8): Observable<Incidencia[]> {
     const params = new HttpParams().set('page', page).set('limit', limit).set('sortBy', 'fecha').set('order', 'desc');
 
-    return this.http
-      .get<Incidencia[]>(this.incidenciasUrl, { params })
-      .pipe(catchError(this.manejarError('obtener incidencias')));
+    return this.http.get<Incidencia[]>(this.incidenciasUrl, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.warn(
+          'MockAPI no aceptó los parámetros de ordenamiento; se repetirá la consulta solo con page y limit.',
+          error,
+        );
+        const parametrosBasicos = new HttpParams().set('page', page).set('limit', limit);
+        return this.http
+          .get<Incidencia[]>(this.incidenciasUrl, { params: parametrosBasicos })
+          .pipe(catchError(this.manejarError('obtener incidencias')));
+      }),
+    );
   }
 
   obtenerIncidenciaPorId(id: string): Observable<Incidencia> {

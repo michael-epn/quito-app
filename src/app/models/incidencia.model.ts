@@ -7,6 +7,7 @@ export type PrioridadIncidencia = 'baja' | 'media' | 'alta';
 
 export interface Incidencia {
   id: string;
+  codigo?: string;
   tipo: TipoIncidencia;
   descripcion: string;
   direccion: string;
@@ -18,6 +19,16 @@ export interface Incidencia {
   latitud: number;
   longitud: number;
   observacion: string;
+}
+
+export function identificadoresIncidencia(incidencia: Pick<Incidencia, 'id' | 'codigo'>): string[] {
+  return [
+    ...new Set(
+      [incidencia.id, incidencia.codigo]
+        .map((valor) => (valor === null || valor === undefined ? '' : String(valor).trim()))
+        .filter((valor) => valor.length > 0),
+    ),
+  ];
 }
 
 export type BorradorIncidencia = Partial<Omit<Incidencia, 'id' | 'latitud' | 'longitud'>> & {

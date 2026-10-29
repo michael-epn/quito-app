@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import type { Incidencia } from '../models/incidencia.model';
 import { IncidenciasService } from '../services/incidencias.service';
@@ -26,9 +26,11 @@ const incidenciaPendiente: Incidencia = {
 
 describe('DetalleIncidenciaPage', () => {
   let incidenciaActual: Incidencia;
+  let obtenerIncidenciaPorId: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     incidenciaActual = { ...incidenciaPendiente };
+    obtenerIncidenciaPorId = vi.fn(() => of(incidenciaActual));
     await TestBed.configureTestingModule({
       imports: [DetalleIncidenciaPage],
       providers: [
@@ -39,7 +41,7 @@ describe('DetalleIncidenciaPage', () => {
         {
           provide: IncidenciasService,
           useValue: {
-            obtenerIncidenciaPorId: () => of(incidenciaActual),
+            obtenerIncidenciaPorId,
             reemplazarIncidencia: (_id: string, incidencia: Incidencia) => of(incidencia),
           },
         },
@@ -91,5 +93,26 @@ describe('DetalleIncidenciaPage', () => {
     incidenciaActual = { ...incidenciaPendiente, estado: 'resuelta', observacion: 'Reparada.' };
     page.cargar(incidenciaActual.id);
     expect(page.estadosPermitidos()).toEqual([]);
+  });
+
+  it('uses the route ID and clears loading after a failed request', () => {
+    obtenerIncidenciaPorId.mockReturnValue(throwError(() => new Error('Request failed')));
+    const fixture = TestBed.createComponent(DetalleIncidenciaPage);
+    const page = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(obtenerIncidenciaPorId).toHaveBeenCalledWith('INC-TEST');
+    expect(page.cargando()).toBe(false);
+    expect(page.error()).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('No se encontró la incidencia');
+  });
+
+  it('clears loading when a request succeeds', () => {
+    const fixture = TestBed.createComponent(DetalleIncidenciaPage);
+    const page = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(page.cargando()).toBe(false);
+    expect(page.incidencia).toEqual(incidenciaPendiente);
   });
 });

@@ -8,12 +8,12 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  @if (cargando) {
+  @if (cargando()) {
   <div class="feedback" role="status">
     <ion-spinner name="crescent"></ion-spinner>
     <span>Cargando detalle…</span>
   </div>
-  } @else if (error || incidencia === null) {
+  } @else if (error() || incidencia === null) {
   <div class="feedback" role="alert">
     <p>No se encontró la incidencia o no se pudo consultar.</p>
     <ion-button routerLink="/incidencias" fill="outline">Volver al listado</ion-button>

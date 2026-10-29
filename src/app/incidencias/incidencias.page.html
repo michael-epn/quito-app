@@ -5,39 +5,41 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  @if (error) {
+  @if (error()) {
   <div class="message error-message" role="alert">
     <p>No se pudo completar la consulta de incidencias.</p>
     <ion-button fill="outline" (click)="recargar()">Reintentar</ion-button>
   </div>
-  } @if (cargando && incidencias.length === 0 && !error) {
+  } @if (cargando() && incidencias().length === 0 && !error()) {
   <div class="message" role="status">
     <ion-spinner name="crescent"></ion-spinner>
     <span>Cargando incidencias…</span>
   </div>
-  } @else if (incidencias.length === 0 && !error) {
+  } @else if (incidencias().length === 0 && !error()) {
   <div class="message">
     <h2>Sin incidencias</h2>
     <p>Aún no hay reportes para mostrar.</p>
   </div>
-  } @for (incidencia of incidencias; track incidencia.id) {
+  } @for (incidencia of incidencias(); track codigoIncidencia(incidencia)) {
   <ion-card>
     <ion-card-content>
       <div class="card-heading">
         <div>
-          <p class="codigo">Código {{ incidencia.id }}</p>
+          <p class="codigo">Código {{ incidencia.codigo || codigoIncidencia(incidencia) }}</p>
           <h2>{{ incidencia.tipo | titlecase }}</h2>
         </div>
         <ion-button
           fill="clear"
-          [attr.aria-label]="estaEnSeguimiento(incidencia.id) ? 'Quitar de seguimiento' : 'Marcar para seguimiento'"
+          [color]="estaEnSeguimiento(incidencia) ? 'primary' : 'medium'"
+          [attr.aria-label]="estaEnSeguimiento(incidencia) ? 'Quitar de seguimiento' : 'Marcar para seguimiento'"
           (click)="alternarSeguimiento(incidencia)"
         >
           <ion-icon
-            slot="icon-only"
-            [name]="estaEnSeguimiento(incidencia.id) ? 'bookmark' : 'bookmark-outline'"
+            slot="start"
+            [name]="estaEnSeguimiento(incidencia) ? 'bookmark' : 'bookmark-outline'"
             aria-hidden="true"
           ></ion-icon>
+          {{ estaEnSeguimiento(incidencia) ? 'Desmarcar seguimiento' : 'Marcar seguimiento' }}
         </ion-button>
       </div>
 
@@ -55,18 +57,22 @@
 
       <div class="card-footer">
         <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
-        <ion-button size="small" fill="clear" [routerLink]="['/incidencia', incidencia.id]">Ver detalle</ion-button>
+        <ion-button size="small" fill="clear" [routerLink]="['/incidencia', codigoIncidencia(incidencia)]">
+          Ver detalle
+        </ion-button>
       </div>
     </ion-card-content>
   </ion-card>
-  } @if (error && incidencias.length > 0) {
+  } @if (mensajeErrorLocal()) {
+  <p class="message error-message" role="alert">{{ mensajeErrorLocal() }}</p>
+  } @if (error() && incidencias().length > 0) {
   <div class="message error-message" role="alert">
-    <p>No se pudo cargar la siguiente página.</p>
+    <p>No se pudo cargar la página de incidencias.</p>
     <ion-button fill="outline" (click)="reintentarSiguientePagina()">Reintentar</ion-button>
   </div>
-  } @if (finDeLista && incidencias.length > 0) {
+  } @if (infiniteScrollDisabled() && incidencias().length > 0 && !error()) {
   <p class="end-message">Has llegado al final de la lista.</p>
-  } @if (cargando && incidencias.length > 0) {
+  } @if (cargando() && incidencias().length > 0) {
   <div class="message" role="status">
     <ion-spinner name="crescent"></ion-spinner>
     <span>Cargando más incidencias…</span>
@@ -75,7 +81,7 @@
 
   <ion-infinite-scroll
     threshold="120px"
-    [disabled]="finDeLista || error || incidencias.length === 0"
+    [disabled]="infiniteScrollDisabled() || error() || incidencias().length === 0"
     (ionInfinite)="cargarSiguientePagina($event)"
   >
     <ion-infinite-scroll-content

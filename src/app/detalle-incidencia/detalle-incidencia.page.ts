@@ -1,6 +1,6 @@
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import type { OnInit } from '@angular/core';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -27,6 +27,7 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { bookmark, bookmarkOutline } from 'ionicons/icons';
+import { finalize } from 'rxjs';
 
 import type { EstadoIncidencia, Incidencia } from '../models/incidencia.model';
 import { IncidenciasService } from '../services/incidencias.service';
@@ -76,8 +77,8 @@ export class DetalleIncidenciaPage implements OnInit {
     estado: this.formBuilder.nonNullable.control<EstadoIncidencia>('pendiente', Validators.required),
     observacion: this.formBuilder.nonNullable.control(''),
   });
-  cargando = true;
-  error = false;
+  readonly cargando = signal(true);
+  readonly error = signal(false);
   guardando = false;
   mensajeToast = '';
   seguimiento = false;
@@ -90,9 +91,10 @@ export class DetalleIncidenciaPage implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((parametros) => {
       const id = parametros.get('id');
+      console.log('ID de incidencia recibido en la ruta:', id);
       if (id === null) {
-        this.cargando = false;
-        this.error = true;
+        this.cargando.set(false);
+        this.error.set(true);
         return;
       }
       this.cargar(id);
@@ -100,25 +102,29 @@ export class DetalleIncidenciaPage implements OnInit {
   }
 
   cargar(id: string): void {
-    this.cargando = true;
-    this.error = false;
+    this.cargando.set(true);
+    this.error.set(false);
     this.mensajeError = '';
-    this.incidenciasService.obtenerIncidenciaPorId(id).subscribe({
-      next: (incidencia) => {
-        this.incidencia = incidencia;
-        this.form.reset({
-          estado: incidencia.estado,
-          observacion: incidencia.observacion ?? '',
-        });
-        this.actualizarValidadorObservacion(incidencia.estado);
-        this.sincronizarSeguimiento();
-        this.cargando = false;
-      },
-      error: () => {
-        this.error = true;
-        this.cargando = false;
-      },
-    });
+    this.incidenciasService
+      .obtenerIncidenciaPorId(id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.cargando.set(false)),
+      )
+      .subscribe({
+        next: (incidencia) => {
+          this.incidencia = incidencia;
+          this.form.reset({
+            estado: incidencia.estado,
+            observacion: incidencia.observacion ?? '',
+          });
+          this.actualizarValidadorObservacion(incidencia.estado);
+          this.sincronizarSeguimiento();
+        },
+        error: () => {
+          this.error.set(true);
+        },
+      });
   }
 
   estadosPermitidos(): EstadoIncidencia[] {

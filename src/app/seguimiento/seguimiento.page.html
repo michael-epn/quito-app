@@ -5,27 +5,27 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  @if (cargando) {
+  @if (cargando()) {
   <div class="feedback" role="status">
     <ion-spinner name="crescent"></ion-spinner>
     <span>Cargando incidencias marcadas…</span>
   </div>
-  } @else if (error) {
+  } @else if (error()) {
   <div class="feedback error" role="alert">
-    <p>No se pudo cargar el seguimiento. Revisa tu conexión e inténtalo de nuevo.</p>
+    <p>{{ mensajeError() || 'No se pudo cargar el seguimiento. Revisa tu conexión e inténtalo de nuevo.' }}</p>
     <ion-button fill="outline" (click)="cargarSeguimiento()">Reintentar</ion-button>
   </div>
-  } @else if (incidencias.length === 0) {
+  } @else if (incidencias().length === 0) {
   <div class="feedback">
-    <h2>Sin incidencias guardadas</h2>
-    <p>Marca incidencias con el icono de marcador para encontrarlas aquí.</p>
+    <h2>Aún no has marcado incidencias para seguimiento</h2>
+    <p>Marca incidencias en el listado para encontrarlas aquí.</p>
   </div>
-  } @for (incidencia of incidencias; track incidencia.id) {
+  } @for (incidencia of incidencias(); track codigoIncidencia(incidencia)) {
   <ion-card>
     <ion-card-content>
       <div class="heading">
         <div>
-          <p class="codigo">Código {{ incidencia.id }}</p>
+          <p class="codigo">Código {{ codigoIncidencia(incidencia) }}</p>
           <h2>{{ incidencia.tipo | titlecase }}</h2>
         </div>
         <ion-button fill="clear" color="danger" (click)="desmarcar(incidencia)">Desmarcar</ion-button>
@@ -35,6 +35,9 @@
       <p><strong>Sector:</strong> {{ incidencia.sector }}</p>
       <p><strong>Fecha:</strong> {{ incidencia.fecha | date: 'mediumDate' }}</p>
       <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
+      @if (mensajeError()) {
+      <p class="error" role="alert">{{ mensajeError() }}</p>
+      }
     </ion-card-content>
   </ion-card>
   }
