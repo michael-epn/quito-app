@@ -20,6 +20,12 @@ export class IncidenciasService {
       .pipe(catchError(this.manejarError('obtener incidencias')));
   }
 
+  obtenerIncidenciaPorId(id: string): Observable<Incidencia> {
+    return this.http
+      .get<Incidencia>(`${this.incidenciasUrl}/${encodeURIComponent(id)}`)
+      .pipe(catchError(this.manejarError('obtener incidencia')));
+  }
+
   obtenerTodasLasIncidencias(limit = 100): Observable<Incidencia[]> {
     return this.obtenerIncidencias(1, limit).pipe(
       expand((incidencias, index) => (incidencias.length < limit ? EMPTY : this.obtenerIncidencias(index + 2, limit))),

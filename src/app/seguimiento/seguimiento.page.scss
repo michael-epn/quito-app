@@ -1,0 +1,30 @@
+.feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 10rem;
+  text-align: center;
+}
+
+.error {
+  color: var(--ion-color-danger);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.heading h2,
+.heading p {
+  margin: 0.25rem 0;
+}
+
+.codigo {
+  color: var(--ion-color-medium);
+  font-size: 0.8rem;
+}

@@ -1,0 +1,17 @@
+<ion-tabs>
+  <ion-router-outlet></ion-router-outlet>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="inicio" [routerLink]="['/inicio']" routerLinkActive="tab-selected">
+      <ion-icon name="home-outline" aria-hidden="true"></ion-icon>
+      <ion-label>Inicio</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="incidencias" [routerLink]="['/incidencias']" routerLinkActive="tab-selected">
+      <ion-icon name="list-outline" aria-hidden="true"></ion-icon>
+      <ion-label>Incidencias</ion-label>
+    </ion-tab-button>
+    <ion-tab-button tab="seguimiento" [routerLink]="['/seguimiento']" routerLinkActive="tab-selected">
+      <ion-icon name="bookmark-outline" aria-hidden="true"></ion-icon>
+      <ion-label>Seguimiento</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

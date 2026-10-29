@@ -1,21 +1,49 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title> Blank </ion-title>
+    <ion-title>UrbanInspect</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <h1>Estado de incidencias</h1>
+  <p>Resumen actualizado de los reportes de infraestructura urbana.</p>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>
-      Start with Ionic
-      <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a>
-    </p>
+  @if (cargando) {
+  <div class="feedback" role="status">
+    <ion-spinner name="crescent"></ion-spinner>
+    <span>Cargando indicadores…</span>
   </div>
+  } @else if (error) {
+  <ion-card color="danger">
+    <ion-card-content>
+      No se pudieron cargar los indicadores.
+      <ion-button fill="clear" color="light" (click)="ionViewWillEnter()">Reintentar</ion-button>
+    </ion-card-content>
+  </ion-card>
+  } @else {
+  <div class="summary-grid">
+    @for (estado of estados; track estado) {
+    <ion-card [class]="'status-card status-' + estado.replace(' ', '-')">
+      <ion-card-header>
+        <ion-card-title>{{ estado | titlecase }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <strong>{{ totales[estado] }}</strong>
+        <span>incidencias</span>
+      </ion-card-content>
+    </ion-card>
+    }
+  </div>
+  }
+
+  <ion-button expand="block" routerLink="/nueva-incidencia">
+    <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+    Registrar incidencia
+  </ion-button>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/nueva-incidencia" aria-label="Registrar incidencia">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

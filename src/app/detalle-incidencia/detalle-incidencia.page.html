@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/incidencias"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de incidencia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (cargando) {
+  <div class="feedback" role="status"><ion-spinner name="crescent"></ion-spinner><span>Cargando detalle…</span></div>
+  } @else if (error || incidencia === null) {
+  <div class="feedback" role="alert">
+    <p>No se encontró la incidencia o no se pudo consultar.</p>
+    <ion-button routerLink="/incidencias" fill="outline">Volver al listado</ion-button>
+  </div>
+  } @else {
+  <ion-card>
+    @if (incidencia.fotografia) {
+    <ion-img [src]="incidencia.fotografia" [alt]="'Fotografía de ' + incidencia.tipo"></ion-img>
+    }
+    <ion-card-content>
+      <p>Código {{ incidencia.id }}</p>
+      <h1>{{ incidencia.tipo | titlecase }}</h1>
+      <p>{{ incidencia.descripcion }}</p>
+      <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
+      <p><strong>Dirección:</strong> {{ incidencia.direccion }}</p>
+      <p><strong>Sector:</strong> {{ incidencia.sector }}</p>
+      <p><strong>Fecha:</strong> {{ incidencia.fecha | date: 'mediumDate' }}</p>
+      <p><strong>Prioridad:</strong> {{ incidencia.prioridad | titlecase }}</p>
+      <p><strong>Observación:</strong> {{ incidencia.observacion || 'Sin observaciones' }}</p>
+      <p><strong>Coordenadas:</strong> {{ incidencia.latitud }}, {{ incidencia.longitud }}</p>
+    </ion-card-content>
+  </ion-card>
+  }
+</ion-content>

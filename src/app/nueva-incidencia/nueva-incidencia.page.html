@@ -1,0 +1,141 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nueva incidencia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #form="ngForm" (ngSubmit)="registrar()">
+    <ion-item>
+      <ion-select
+        label="Tipo de incidencia"
+        labelPlacement="stacked"
+        name="tipo"
+        [(ngModel)]="formulario.tipo"
+        (ngModelChange)="guardarBorrador()"
+        required
+      >
+        @for (tipo of tipos; track tipo) {
+        <ion-select-option [value]="tipo">{{ tipo | titlecase }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea
+        label="Descripción"
+        labelPlacement="stacked"
+        name="descripcion"
+        [(ngModel)]="formulario.descripcion"
+        (ngModelChange)="guardarBorrador()"
+        rows="3"
+        required
+      ></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Dirección"
+        labelPlacement="stacked"
+        name="direccion"
+        [(ngModel)]="formulario.direccion"
+        (ngModelChange)="guardarBorrador()"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Sector"
+        labelPlacement="stacked"
+        name="sector"
+        [(ngModel)]="formulario.sector"
+        (ngModelChange)="guardarBorrador()"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Fecha"
+        labelPlacement="stacked"
+        name="fecha"
+        type="date"
+        [(ngModel)]="formulario.fecha"
+        (ngModelChange)="guardarBorrador()"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        label="Prioridad"
+        labelPlacement="stacked"
+        name="prioridad"
+        [(ngModel)]="formulario.prioridad"
+        (ngModelChange)="guardarBorrador()"
+        required
+      >
+        @for (prioridad of prioridades; track prioridad) {
+        <ion-select-option [value]="prioridad">{{ prioridad | titlecase }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Fotografía (URL o Base64, opcional)"
+        labelPlacement="stacked"
+        name="fotografia"
+        [(ngModel)]="formulario.fotografia"
+        (ngModelChange)="guardarBorrador()"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Latitud"
+        labelPlacement="stacked"
+        name="latitud"
+        type="number"
+        [(ngModel)]="formulario.latitud"
+        (ngModelChange)="guardarBorrador()"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        label="Longitud"
+        labelPlacement="stacked"
+        name="longitud"
+        type="number"
+        [(ngModel)]="formulario.longitud"
+        (ngModelChange)="guardarBorrador()"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea
+        label="Observación (opcional)"
+        labelPlacement="stacked"
+        name="observacion"
+        [(ngModel)]="formulario.observacion"
+        (ngModelChange)="guardarBorrador()"
+        rows="2"
+      ></ion-textarea>
+    </ion-item>
+
+    @if (error) {
+    <p class="error-message" role="alert">{{ error }}</p>
+    }
+
+    <ion-button expand="block" type="submit" [disabled]="guardando || form.invalid">
+      {{ guardando ? 'Registrando…' : 'Registrar incidencia' }}
+    </ion-button>
+  </form>
+</ion-content>

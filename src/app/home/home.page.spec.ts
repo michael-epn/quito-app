@@ -1,5 +1,7 @@
-import type { ComponentFixture } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { HomePage } from './home.page';
 
@@ -8,6 +10,10 @@ describe('HomePage', () => {
   let fixture: ComponentFixture<HomePage>;
 
   beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HomePage],
+      providers: [provideHttpClient(), provideRouter([])],
+    }).compileComponents();
     fixture = TestBed.createComponent(HomePage);
     component = fixture.componentInstance;
     fixture.detectChanges();

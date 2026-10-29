@@ -1,27 +1,43 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+h1 {
+  margin-bottom: 0.25rem;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.25rem;
+  margin: 1rem 0;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+.status-card {
+  margin: 0.25rem 0;
 }
 
-#container a {
-  text-decoration: none;
+.status-pendiente {
+  border-top: 4px solid var(--ion-color-warning);
+}
+
+.status-en-proceso {
+  border-top: 4px solid var(--ion-color-primary);
+}
+
+.status-resuelta {
+  border-top: 4px solid var(--ion-color-success);
+}
+
+ion-card-content {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+ion-card-content strong {
+  font-size: 2rem;
+}
+
+.feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
 }
