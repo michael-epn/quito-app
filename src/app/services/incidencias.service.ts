@@ -48,6 +48,12 @@ export class IncidenciasService {
       .pipe(catchError(this.manejarError('actualizar estado y observación')));
   }
 
+  reemplazarIncidencia(id: string, incidencia: Incidencia): Observable<Incidencia> {
+    return this.http
+      .put<Incidencia>(`${this.incidenciasUrl}/${encodeURIComponent(id)}`, incidencia)
+      .pipe(catchError(this.manejarError('actualizar incidencia')));
+  }
+
   actualizarEstado(id: string, estado: EstadoIncidencia, observacion: string): Observable<Incidencia> {
     return this.actualizarEstadoYObservacion(id, { estado, observacion });
   }

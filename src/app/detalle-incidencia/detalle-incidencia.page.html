@@ -9,7 +9,10 @@
 
 <ion-content class="ion-padding">
   @if (cargando) {
-  <div class="feedback" role="status"><ion-spinner name="crescent"></ion-spinner><span>Cargando detalle…</span></div>
+  <div class="feedback" role="status">
+    <ion-spinner name="crescent"></ion-spinner>
+    <span>Cargando detalle…</span>
+  </div>
   } @else if (error || incidencia === null) {
   <div class="feedback" role="alert">
     <p>No se encontró la incidencia o no se pudo consultar.</p>
@@ -21,17 +24,100 @@
     <ion-img [src]="incidencia.fotografia" [alt]="'Fotografía de ' + incidencia.tipo"></ion-img>
     }
     <ion-card-content>
-      <p>Código {{ incidencia.id }}</p>
-      <h1>{{ incidencia.tipo | titlecase }}</h1>
-      <p>{{ incidencia.descripcion }}</p>
-      <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
+      <div class="title-row">
+        <div>
+          <p class="codigo">Código {{ incidencia.id }}</p>
+          <h1>{{ incidencia.tipo | titlecase }}</h1>
+        </div>
+        <ion-button
+          fill="clear"
+          [attr.aria-label]="seguimiento ? 'Quitar de seguimiento' : 'Marcar para seguimiento'"
+          (click)="alternarSeguimiento()"
+        >
+          <ion-icon
+            slot="icon-only"
+            [name]="seguimiento ? 'bookmark' : 'bookmark-outline'"
+            aria-hidden="true"
+          ></ion-icon>
+        </ion-button>
+      </div>
+
+      <p><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
       <p><strong>Dirección:</strong> {{ incidencia.direccion }}</p>
       <p><strong>Sector:</strong> {{ incidencia.sector }}</p>
       <p><strong>Fecha:</strong> {{ incidencia.fecha | date: 'mediumDate' }}</p>
+      <p>
+        <strong>Estado:</strong>
+        <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
+      </p>
       <p><strong>Prioridad:</strong> {{ incidencia.prioridad | titlecase }}</p>
-      <p><strong>Observación:</strong> {{ incidencia.observacion || 'Sin observaciones' }}</p>
-      <p><strong>Coordenadas:</strong> {{ incidencia.latitud }}, {{ incidencia.longitud }}</p>
+      @if (coordenadasDisponibles()) {
+      <p><strong>Latitud:</strong> {{ incidencia.latitud }}</p>
+      <p><strong>Longitud:</strong> {{ incidencia.longitud }}</p>
+      }
+      <p><strong>Observación registrada:</strong> {{ incidencia.observacion || 'Sin observaciones' }}</p>
     </ion-card-content>
   </ion-card>
-  }
+
+  @if (estadosPermitidos().length > 0) {
+  <ion-card>
+    <ion-card-content>
+      <h2>Actualizar estado</h2>
+      <form [formGroup]="form" (ngSubmit)="confirmarCambioEstado()">
+        <ion-item>
+          <ion-select
+            label="Nuevo estado"
+            labelPlacement="stacked"
+            formControlName="estado"
+            (ionChange)="cambiarEstadoSeleccionado($event.detail.value)"
+          >
+            <ion-select-option [value]="incidencia.estado" disabled>
+              Estado actual: {{ incidencia.estado | titlecase }}
+            </ion-select-option>
+            @for (estado of estadosPermitidos(); track estado) {
+            <ion-select-option [value]="estado">{{ estado | titlecase }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        @if (form.controls.estado.value === 'resuelta') {
+        <ion-item>
+          <ion-textarea
+            label="Observación de resolución"
+            labelPlacement="stacked"
+            formControlName="observacion"
+            rows="3"
+            placeholder="Describe el trabajo realizado"
+            required
+          ></ion-textarea>
+        </ion-item>
+        @if (form.controls.observacion.invalid && form.controls.observacion.touched) {
+        <p class="field-error">La observación es obligatoria y no puede contener solo espacios.</p>
+        } } @else {
+        <ion-item>
+          <ion-textarea
+            label="Observación"
+            labelPlacement="stacked"
+            formControlName="observacion"
+            rows="3"
+          ></ion-textarea>
+        </ion-item>
+        } @if (mensajeError) {
+        <p class="error-message" role="alert">{{ mensajeError }}</p>
+        }
+
+        <ion-button expand="block" type="submit" [disabled]="guardando">
+          {{ guardando ? 'Actualizando…' : 'Confirmar cambio' }}
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+  } @else {
+  <ion-card color="success">
+    <ion-card-content>
+      Esta incidencia está resuelta. No se permiten más cambios de estado.
+      <p><strong>Observación registrada:</strong> {{ incidencia.observacion || 'Sin observaciones' }}</p>
+    </ion-card-content>
+  </ion-card>
+  } }
 </ion-content>
