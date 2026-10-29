@@ -1,9 +1,5 @@
 export type TipoIncidencia =
-  | 'luminarias dañadas'
-  | 'baches'
-  | 'señalización deteriorada'
-  | 'alcantarillas obstruidas'
-  | 'daños en parques';
+  'luminarias dañadas' | 'baches' | 'señalización deteriorada' | 'alcantarillas obstruidas' | 'daños en parques';
 
 export type EstadoIncidencia = 'pendiente' | 'en proceso' | 'resuelta';
 

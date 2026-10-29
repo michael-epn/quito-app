@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  mockApiUrl: 'https://<project-id>.mockapi.io/api/v1',
 };
 
 /*
