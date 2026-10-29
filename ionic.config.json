@@ -1,0 +1,7 @@
+{
+  "name": "quito-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
