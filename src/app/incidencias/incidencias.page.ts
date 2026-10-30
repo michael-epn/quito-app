@@ -7,18 +7,35 @@ import {
   IonButton,
   IonCard,
   IonCardContent,
+  IonChip,
   IonContent,
   IonHeader,
   IonIcon,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonLabel,
   IonSpinner,
+  IonSkeletonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
 import type { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { bookmark, bookmarkOutline } from 'ionicons/icons';
+import {
+  alertCircleOutline,
+  bookmark,
+  bookmarkOutline,
+  calendarOutline,
+  clipboardOutline,
+  constructOutline,
+  flashOutline,
+  imageOutline,
+  locationOutline,
+  mapOutline,
+  pricetagOutline,
+  waterOutline,
+  leafOutline,
+} from 'ionicons/icons';
 import { finalize } from 'rxjs';
 
 import { identificadoresIncidencia } from '../models/incidencia.model';
@@ -39,12 +56,15 @@ const LIMITE_POR_PAGINA = 8;
     IonContent,
     IonCard,
     IonCardContent,
+    IonChip,
     IonBadge,
     IonButton,
     IonIcon,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonLabel,
     IonSpinner,
+    IonSkeletonText,
     RouterLink,
     DatePipe,
     TitleCasePipe,
@@ -65,7 +85,21 @@ export class IncidenciasPage implements OnInit {
   readonly infiniteScrollDisabled = signal(false);
 
   constructor() {
-    addIcons({ bookmark, bookmarkOutline });
+    addIcons({
+      alertCircleOutline,
+      bookmark,
+      bookmarkOutline,
+      calendarOutline,
+      clipboardOutline,
+      constructOutline,
+      flashOutline,
+      imageOutline,
+      locationOutline,
+      mapOutline,
+      pricetagOutline,
+      waterOutline,
+      leafOutline,
+    });
   }
 
   ngOnInit(): void {
@@ -161,6 +195,32 @@ export class IncidenciasPage implements OnInit {
         return 'primary';
       case 'resuelta':
         return 'success';
+    }
+  }
+
+  colorPrioridad(prioridad: Incidencia['prioridad']): string {
+    switch (prioridad) {
+      case 'alta':
+        return 'danger';
+      case 'media':
+        return 'warning';
+      case 'baja':
+        return 'medium';
+    }
+  }
+
+  iconoTipo(tipo: Incidencia['tipo']): string {
+    switch (tipo) {
+      case 'luminarias dañadas':
+        return 'flash-outline';
+      case 'baches':
+        return 'construct-outline';
+      case 'señalización deteriorada':
+        return 'alert-circle-outline';
+      case 'alcantarillas obstruidas':
+        return 'water-outline';
+      case 'daños en parques':
+        return 'leaf-outline';
     }
   }
 

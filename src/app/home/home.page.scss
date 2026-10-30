@@ -1,16 +1,44 @@
-h1 {
-  margin-bottom: 0.25rem;
+.dashboard-intro {
+  padding: 18px 4px 4px;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.dashboard-intro p {
+  max-width: 36rem;
+}
+
+.total-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--app-muted);
+}
+
+.total-summary strong {
+  color: var(--app-text);
+  font-size: 1.65rem;
 }
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.25rem;
-  margin: 1rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 10px;
+  margin: 16px 0 24px;
 }
 
 .status-card {
-  margin: 0.25rem 0;
+  margin: 0;
+  overflow: hidden;
+  border-top: 4px solid var(--ion-color-primary);
 }
 
 .status-pendiente {
@@ -26,13 +54,59 @@ h1 {
 }
 
 ion-card-content {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  display: grid;
+  gap: 14px;
 }
 
-ion-card-content strong {
-  font-size: 2rem;
+.status-card ion-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+
+.status-card ion-card-header ion-icon {
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--app-background);
+  color: var(--ion-color-primary);
+  font-size: 1.3rem;
+}
+
+.status-card ion-card-title {
+  color: var(--app-text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.status-pendiente ion-card-header ion-icon {
+  color: #8a5700;
+}
+
+.status-en-proceso ion-card-header ion-icon {
+  color: var(--ion-color-primary);
+}
+
+.status-resuelta ion-card-header ion-icon {
+  color: var(--ion-color-success);
+}
+
+.card-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  color: var(--app-muted);
+}
+
+.card-total strong {
+  color: var(--app-text);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+ion-progress-bar {
+  height: 8px;
+  border-radius: 999px;
 }
 
 .feedback {
@@ -40,4 +114,10 @@ ion-card-content strong {
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 0;
+}
+
+.quick-action {
+  min-height: 52px;
+  margin: 0 0 18px;
+  box-shadow: 0 6px 16px rgb(21 94 239 / 20%);
 }

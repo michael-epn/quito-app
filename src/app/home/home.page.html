@@ -5,8 +5,19 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <h1>Estado de incidencias</h1>
-  <p>Resumen actualizado de los reportes de infraestructura urbana.</p>
+  <section class="page-intro dashboard-intro">
+    <span class="eyebrow">CENTRO DE OPERACIONES</span>
+    <h1>Estado de incidencias</h1>
+    <p>Resumen actualizado de los reportes de infraestructura urbana.</p>
+    @if (!cargando() && !error()) {
+    <div class="total-summary"><strong>{{ totalIncidencias() }}</strong><span>reportes registrados</span></div>
+    }
+  </section>
+
+  <ion-button class="quick-action" expand="block" routerLink="/nueva-incidencia" aria-label="Registrar incidencia">
+    <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+    Registrar incidencia
+  </ion-button>
 
   @if (cargando()) {
   <div class="feedback" role="status">
@@ -16,6 +27,7 @@
   } @else if (error()) {
   <ion-card color="danger">
     <ion-card-content>
+      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
       No se pudieron cargar los indicadores.
       <ion-button fill="clear" color="light" (click)="reintentar()">Reintentar</ion-button>
     </ion-card-content>
@@ -25,25 +37,21 @@
     @for (estado of estados; track estado) {
     <ion-card [class]="'status-card status-' + estado.replace(' ', '-')">
       <ion-card-header>
+        <ion-icon [name]="iconoEstado(estado)" aria-hidden="true"></ion-icon>
         <ion-card-title>{{ estado | titlecase }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <strong>{{ totales()[estado] }}</strong>
-        <span>incidencias</span>
+        <div class="card-total">
+          <strong>{{ totales()[estado] }}</strong>
+          <span>{{ porcentaje(estado) }}% del total</span>
+        </div>
+        <ion-progress-bar
+          [color]="estado === 'pendiente' ? 'warning' : estado === 'resuelta' ? 'success' : 'primary'"
+          [value]="porcentaje(estado) / 100"
+        ></ion-progress-bar>
       </ion-card-content>
     </ion-card>
     }
   </div>
   }
-
-  <ion-button expand="block" routerLink="/nueva-incidencia">
-    <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
-    Registrar incidencia
-  </ion-button>
-
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button routerLink="/nueva-incidencia" aria-label="Registrar incidencia">
-      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 </ion-content>

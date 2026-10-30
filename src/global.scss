@@ -1,3 +1,5 @@
+@use './theme/variables.scss';
+
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -10,21 +12,20 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+@import '@ionic/angular/css/core.css';
 
 /* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/display.css';
 
 /* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
-
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -34,4 +35,376 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+
+body {
+  background: var(--app-background);
+  color: var(--app-text);
+  font-size: 16px;
+}
+
+ion-content {
+  --background: var(--app-background);
+}
+
+ion-header ion-toolbar {
+  --border-width: 0;
+  --min-height: 60px;
+  padding-inline: 8px;
+}
+
+ion-title {
+  font-size: 1.1rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+ion-card {
+  margin: 12px 0;
+  border: 1px solid rgb(208 213 221 / 65%);
+  border-radius: var(--app-radius);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+}
+
+ion-card-content {
+  color: var(--app-text);
+}
+
+ion-button {
+  --border-radius: 12px;
+  font-weight: 650;
+  text-transform: none;
+}
+
+ion-item {
+  --border-color: var(--app-border);
+  --border-radius: 10px;
+  --background: var(--app-surface);
+  margin-block: 4px;
+}
+
+ion-badge {
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+ion-tab-bar {
+  --background: var(--app-surface);
+  --border: 1px solid var(--app-border);
+  padding: 4px 8px max(4px, env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 18px rgb(16 24 40 / 7%);
+}
+
+ion-tab-button {
+  --color: var(--app-muted);
+  --color-selected: var(--ion-color-primary);
+  min-height: 54px;
+  font-weight: 650;
+}
+
+.page-intro {
+  margin: 8px 0 20px;
+  color: var(--app-muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.page-intro h1 {
+  margin: 0 0 8px;
+  color: var(--app-text);
+  font-size: clamp(1.45rem, 6vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+
+.empty-state,
+.error-state {
+  display: grid;
+  min-height: 220px;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 24px;
+  border: 1px dashed var(--app-border);
+  border-radius: var(--app-radius);
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.empty-state ion-icon,
+.error-state ion-icon {
+  font-size: 3rem;
+}
+
+.empty-state h2,
+.error-state h2,
+.empty-state p,
+.error-state p {
+  margin: 0;
+}
+
+.skeleton-card {
+  padding: 16px;
+}
+
+.skeleton-line {
+  display: block;
+  height: 14px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+.skeleton-line.short {
+  width: 38%;
+}
+
+.skeleton-line.medium {
+  width: 68%;
+}
+
+.skeleton-photo {
+  display: block;
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+}
+
+.feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 10rem;
+  text-align: center;
+}
+
+.field-error,
+.error-message {
+  margin: 4px 0;
+  color: var(--ion-color-danger);
+}
+
+app-registro-incidencia .section-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+app-registro-incidencia .section-icon,
+app-registro-incidencia .dropzone-icon {
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: #eaf0ff;
+  color: var(--ion-color-primary);
+}
+
+app-registro-incidencia .section-icon {
+  width: 42px;
+  height: 42px;
+}
+
+app-registro-incidencia .section-icon ion-icon {
+  font-size: 1.25rem;
+}
+
+app-registro-incidencia .section-title h2 {
+  margin: 0 0 4px;
+  color: var(--app-text);
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+app-registro-incidencia .section-title p {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 0.87rem;
+}
+
+app-registro-incidencia .coordinates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+app-registro-incidencia .location-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+app-registro-incidencia .location-action div {
+  display: grid;
+  gap: 3px;
+}
+
+app-registro-incidencia .location-action strong {
+  color: var(--app-text);
+}
+
+app-registro-incidencia .location-action span,
+app-registro-incidencia .helper-text {
+  color: var(--app-muted);
+  font-size: 0.82rem;
+}
+
+app-registro-incidencia .location-action ion-button {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+app-registro-incidencia .helper-text {
+  margin: 0;
+}
+
+app-registro-incidencia .weather-card {
+  margin: 8px 0 0;
+  border: 1px solid #b9d1ff;
+  background: #f0f5ff;
+  box-shadow: none;
+}
+
+app-registro-incidencia .weather-card ion-card-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+app-registro-incidencia .weather-card > ion-card-content > ion-icon {
+  flex: 0 0 auto;
+  color: var(--ion-color-primary);
+  font-size: 1.45rem;
+}
+
+app-registro-incidencia .weather-card p {
+  margin: 5px 0 0;
+  color: var(--app-muted);
+}
+
+app-registro-incidencia .weather-error {
+  border-color: var(--app-border);
+  background: var(--app-background);
+}
+
+app-registro-incidencia .rain-alert {
+  border-color: #e6a700;
+  background: #fff7db;
+}
+
+app-registro-incidencia .rain-alert > ion-card-content > ion-icon,
+app-registro-incidencia .rain-warning {
+  color: #7a4b00;
+}
+
+app-registro-incidencia .rain-warning {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+app-registro-incidencia .required-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #9c2424;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+app-registro-incidencia .required-note ion-icon {
+  font-size: 1.1rem;
+}
+
+app-registro-incidencia .photo-preview-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--app-background);
+}
+
+app-registro-incidencia .photo-preview {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+app-registro-incidencia .change-photo {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  margin: 0;
+  box-shadow: 0 3px 12px rgb(16 24 40 / 20%);
+}
+
+app-registro-incidencia .photo-dropzone {
+  display: grid;
+  min-height: 170px;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 18px;
+  border: 2px dashed #98a2b3;
+  border-radius: 12px;
+  background: #f8faff;
+  color: var(--app-text);
+  text-align: center;
+}
+
+app-registro-incidencia .photo-dropzone > span:last-child {
+  color: var(--app-muted);
+  font-size: 0.84rem;
+}
+
+app-registro-incidencia .dropzone-icon {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
+  border-radius: 50%;
+}
+
+app-registro-incidencia .dropzone-icon ion-icon {
+  font-size: 1.45rem;
+}
+
+app-registro-incidencia .saving-feedback,
+app-registro-incidencia .weather-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #eaf0ff;
+  color: #173b84;
+  font-weight: 650;
+  text-align: center;
+}
+
+app-registro-incidencia .submit-button {
+  margin: 18px 0 10px;
+  min-height: 52px;
+  box-shadow: 0 6px 16px rgb(21 94 239 / 20%);
+}
+
+@media (min-width: 720px) {
+  ion-content > * {
+    max-width: 900px;
+    margin-inline: auto;
+  }
+
+  @media (max-width: 380px) {
+    app-registro-incidencia .location-action {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+}
