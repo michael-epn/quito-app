@@ -55,17 +55,25 @@ Aplicación móvil para registrar y consultar incidencias de infraestructura urb
 
 ## Compilar para Android
 
-La plataforma Android está en `android/`. Después de cambiar dependencias o plugins nativos, sincroniza el proyecto:
+1. Compila la aplicación web para generar los archivos de `www/`:
 
-```bash
-npx cap sync android
-```
+   ```bash
+   ionic build
+   ```
 
-Puedes abrir el proyecto en Android Studio:
+2. Sincroniza los archivos web, plugins y configuración con el proyecto Android:
 
-```bash
-npx cap open android
-```
+   ```bash
+   npx cap sync android
+   ```
+
+3. Abre el proyecto nativo en Android Studio si necesitas compilar o ejecutar el APK:
+
+   ```bash
+   npx cap open android
+   ```
+
+Repite `ionic build` y `npx cap sync android` después de cada cambio web que quieras incluir en Android y después de cambiar dependencias o plugins nativos.
 
 Para generar un APK debug desde Windows:
 
@@ -105,6 +113,7 @@ En `android/app/src/main/AndroidManifest.xml`, dentro de `<manifest>` y fuera de
 | `@capacitor/camera` | Captura/selección y previsualización de fotografía de una incidencia (**R6**). |
 | `@capacitor/geolocation` | Obtención de coordenadas GPS para reportes (**R7**). |
 | `@capacitor/preferences` | Plugin disponible para persistencia nativa clave-valor prevista para códigos de seguimiento y borradores (**R1/R8**). El `StorageService` actual usa `localStorage`; Preferences está instalado, pero aún no es su backend. |
+| Cloudinary Upload API | Almacena las fotografías y devuelve la URL HTTPS pública guardada en MockAPI para consultar la evidencia desde el detalle (**R6**). |
 | `rxjs` | Composición de peticiones HTTP, paginación, debounce del autoguardado y flujos reactivos. |
 | `ionicons` | Iconos de la navegación y acciones. |
 | `vitest`, Angular test builder | Pruebas unitarias de páginas y validaciones. |
@@ -116,9 +125,27 @@ En `android/app/src/main/AndroidManifest.xml`, dentro de `<manifest>` y fuera de
 - **Servicios por responsabilidad:** `IncidenciasService` concentra las operaciones HTTP y la paginación de MockAPI; `StorageService` mantiene estado local independiente de la red; `WeatherService` encapsula Open-Meteo.
 - **Carga progresiva:** el listado solicita páginas de 8 incidencias y deja de pedir páginas cuando la respuesta contiene menos elementos que el límite.
 - **Seguimiento y borradores locales:** `StorageService` guarda `seguimiento_ids` y `borrador_incidencia` en `localStorage` sin requerir conectividad. En una aplicación exclusivamente nativa se puede migrar el backend a `@capacitor/preferences`; ese cambio requiere adaptar sus métodos a la API asíncrona de Preferences.
-- **Fotografías:** Camera devuelve una imagen `DataUrl` con calidad reducida y ancho máximo de 600 px. El formulario envía esa cadena Base64 junto con el registro a MockAPI, evitando permisos de almacenamiento compartido y simplificando el prototipo. Base64 incrementa el tamaño del contenido y MockAPI no es almacenamiento de imágenes: para producción conviene subir la imagen comprimida a almacenamiento de objetos y guardar en la incidencia solo una URL. Evita capturar imágenes de alta resolución o incluir datos personales innecesarios.
+- **Fotografías en Cloudinary:** `@capacitor/camera` entrega la imagen como `DataUrl`; el formulario la conserva para la previsualización y, al guardar, `CloudinaryService` la adjunta como `file` a un `FormData` junto con `upload_preset`. La petición usa el endpoint HTTPS de carga de imágenes de Cloudinary y un **Unsigned Upload Preset**. Tras la carga, se envía a MockAPI únicamente el `secure_url` público devuelto por Cloudinary. Así, la fotografía permanece accesible desde el detalle y no se guardan en el reporte rutas temporales del dispositivo ni datos Base64.
+- **Diseño para trabajo en campo:** las pantallas priorizan jerarquía visual y lectura rápida en exteriores, con contraste alto, tarjetas agrupadas y metadatos acompañados por iconos. Los estados usan colores semánticos consistentes (pendiente: ámbar; en proceso: azul; resuelta: verde) y las prioridades se distinguen con rojo (alta), naranja (media) y gris (baja). El formulario separa clasificación y detalles, ubicación y clima, y evidencia fotográfica. Skeletons, indicadores de carga, mensajes de error y estados vacíos hacen visible el estado de cada operación, incluso durante conexiones lentas.
 - **Clima:** Open-Meteo ofrece pronóstico y condiciones actuales por coordenadas sin API key. `WeatherService` consulta temperatura, precipitación y código WMO; la aplicación avisa cuando la precipitación supera 5 mm, pero una caída o demora del servicio no bloquea el registro.
 - **Configuración del backend:** la URL MockAPI configurada apunta al recurso `incidencias` de UrbanInspect. No guardes credenciales ni secretos en el cliente móvil.
+
+### Configurar Cloudinary
+
+1. En Cloudinary, crea un **Unsigned Upload Preset** llamado `urbaninspect_preset` (o el nombre que vayas a configurar). Limita los formatos y tamaños permitidos según las necesidades de la aplicación.
+2. Copia el nombre de tu Cloudinary (`cloudName`) y el nombre del preset (`uploadPreset`) en el objeto `cloudinary` de `src/environments/environment.ts`:
+
+   ```ts
+   cloudinary: {
+     cloudName: 'TU_CLOUD_NAME',
+     uploadPreset: 'urbaninspect_preset',
+   },
+   ```
+
+3. Configura los mismos valores en `src/environments/environment.prod.ts` para las compilaciones de producción.
+4. No agregues el API secret ni otra credencial privada al código cliente: los valores `cloudName` y `uploadPreset` son públicos. La seguridad de la carga unsigned depende de las restricciones configuradas en el preset.
+
+Al finalizar la configuración, ejecuta `ionic build` y luego `npx cap sync android` para incluir los cambios en la aplicación Android.
 
 ## Scripts disponibles
 

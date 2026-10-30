@@ -9,16 +9,15 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonHeader,
   IonIcon,
+  IonProgressBar,
   IonSpinner,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline } from 'ionicons/icons';
+import { addOutline, alertCircleOutline, checkmarkCircleOutline, constructOutline } from 'ionicons/icons';
 import { finalize } from 'rxjs';
 
 import type { EstadoIncidencia, Incidencia } from '../models/incidencia.model';
@@ -37,9 +36,8 @@ import { IncidenciasService } from '../services/incidencias.service';
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    IonFab,
-    IonFabButton,
     IonIcon,
+    IonProgressBar,
     IonSpinner,
     IonButton,
     RouterLink,
@@ -61,7 +59,7 @@ export class HomePage implements OnInit {
   readonly error = signal(false);
 
   constructor() {
-    addIcons({ addOutline });
+    addIcons({ addOutline, alertCircleOutline, checkmarkCircleOutline, constructOutline });
   }
 
   ngOnInit(): void {
@@ -79,6 +77,26 @@ export class HomePage implements OnInit {
 
   reintentar(): void {
     this.cargarIndicadores();
+  }
+
+  porcentaje(estado: EstadoIncidencia): number {
+    const total = this.totalIncidencias();
+    return total === 0 ? 0 : Math.round((this.totales()[estado] / total) * 100);
+  }
+
+  totalIncidencias(): number {
+    return Object.values(this.totales()).reduce((total, cantidad) => total + cantidad, 0);
+  }
+
+  iconoEstado(estado: EstadoIncidencia): string {
+    switch (estado) {
+      case 'pendiente':
+        return 'alert-circle-outline';
+      case 'en proceso':
+        return 'construct-outline';
+      case 'resuelta':
+        return 'checkmark-circle-outline';
+    }
   }
 
   private cargarIndicadores(): void {

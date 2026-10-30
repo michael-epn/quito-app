@@ -1,48 +1,16 @@
-form {
+.form-intro {
+  padding: 8px 4px 0;
+}
+
+.eyebrow {
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.form-section ion-card-content {
   display: grid;
-  gap: 0.5rem;
-}
-
-.photo-section,
-.location-section {
-  display: grid;
-  gap: 0.5rem;
-  padding: 0.75rem 0;
-}
-
-.photo-preview {
-  width: 100%;
-  max-height: 18rem;
-  border-radius: 0.5rem;
-  object-fit: cover;
-  overflow: hidden;
-}
-
-.coordinates {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-.helper-text {
-  margin: 0.25rem 0;
-  color: var(--ion-color-medium);
-}
-
-.field-error,
-.error-message {
-  margin: 0.25rem 0;
-  color: var(--ion-color-danger);
-}
-
-.weather-feedback {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 0;
-}
-
-.rain-warning {
-  margin-bottom: 0;
-  font-weight: 600;
+  gap: 10px;
+  padding: 18px;
 }

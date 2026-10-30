@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import type { Incidencia } from '../models/incidencia.model';
@@ -52,6 +53,7 @@ describe('SeguimientoPage', () => {
     await TestBed.configureTestingModule({
       imports: [SeguimientoPage],
       providers: [
+        provideRouter([]),
         {
           provide: IncidenciasService,
           useValue: { obtenerTodasLasIncidencias },

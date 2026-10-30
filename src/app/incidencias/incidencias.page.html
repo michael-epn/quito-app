@@ -5,69 +5,104 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  @if (error()) {
-  <div class="message error-message" role="alert">
-    <p>No se pudo completar la consulta de incidencias.</p>
+  <section class="page-intro">
+    <span class="eyebrow">REPORTES URBANOS</span>
+    <h1>Incidencias</h1>
+    <p>Consulta los reportes recientes y marca los que necesites seguir.</p>
+  </section>
+
+  @if (cargando() && incidencias().length === 0 && !error()) {
+  <div aria-label="Cargando incidencias" role="status">
+    @for (skeleton of [1, 2, 3]; track skeleton) {
+    <ion-card class="skeleton-card">
+      <ion-skeleton-text animated class="skeleton-line short"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-line medium"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-line"></ion-skeleton-text>
+      <ion-skeleton-text animated class="skeleton-line medium"></ion-skeleton-text>
+    </ion-card>
+    }
+  </div>
+  } @else if (error() && incidencias().length === 0) {
+  <div class="error-state" role="alert">
+    <ion-icon name="alert-circle-outline" color="danger" aria-hidden="true"></ion-icon>
+    <h2>No se pudo conectar</h2>
+    <p>Revisa tu conexión e inténtalo nuevamente.</p>
     <ion-button fill="outline" (click)="recargar()">Reintentar</ion-button>
   </div>
-  } @if (cargando() && incidencias().length === 0 && !error()) {
-  <div class="message" role="status">
-    <ion-spinner name="crescent"></ion-spinner>
-    <span>Cargando incidencias…</span>
-  </div>
-  } @else if (incidencias().length === 0 && !error()) {
-  <div class="message">
+  } @else if (incidencias().length === 0) {
+  <div class="empty-state">
+    <ion-icon name="clipboard-outline" color="medium" aria-hidden="true"></ion-icon>
     <h2>Sin incidencias</h2>
     <p>Aún no hay reportes para mostrar.</p>
   </div>
   } @for (incidencia of incidencias(); track idIncidencia(incidencia)) {
-  <ion-card>
+  <ion-card class="incidence-card">
     <ion-card-content>
       <div class="card-heading">
-        <div>
-          <p class="codigo">Código {{ incidencia.codigo || codigoIncidencia(incidencia) }}</p>
-          <h2>{{ incidencia.tipo | titlecase }}</h2>
+        <div class="card-identifiers">
+          <ion-chip color="primary">
+            <ion-icon name="pricetag-outline" aria-hidden="true"></ion-icon>
+            <ion-label>{{ incidencia.codigo || codigoIncidencia(incidencia) }}</ion-label>
+          </ion-chip>
+          <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
         </div>
         <ion-button
+          class="bookmark-button"
           fill="clear"
           [color]="estaEnSeguimiento(incidencia) ? 'primary' : 'medium'"
           [attr.aria-label]="estaEnSeguimiento(incidencia) ? 'Quitar de seguimiento' : 'Marcar para seguimiento'"
           (click)="alternarSeguimiento(incidencia)"
         >
           <ion-icon
-            slot="start"
+            slot="icon-only"
             [name]="estaEnSeguimiento(incidencia) ? 'bookmark' : 'bookmark-outline'"
             aria-hidden="true"
           ></ion-icon>
-          {{ estaEnSeguimiento(incidencia) ? 'Desmarcar seguimiento' : 'Marcar seguimiento' }}
         </ion-button>
       </div>
 
-      <div class="incidencia-body">
+      <div class="incidence-main">
         @if (incidencia.fotografia) {
         <img class="thumbnail" [src]="incidencia.fotografia" [alt]="'Fotografía de ' + incidencia.tipo" />
+        } @else {
+        <div class="photo-placeholder" [attr.aria-label]="'Sin fotografía: ' + incidencia.tipo">
+          <ion-icon [name]="iconoTipo(incidencia.tipo)" aria-hidden="true"></ion-icon>
+          <span>Sin foto</span>
+        </div>
         }
-        <div>
-          <p>{{ incidencia.descripcion }}</p>
-          <p><strong>Dirección:</strong> {{ incidencia.direccion }}</p>
-          <p><strong>Sector:</strong> {{ incidencia.sector }}</p>
-          <p><strong>Fecha:</strong> {{ incidencia.fecha | date: 'mediumDate' }}</p>
+        <div class="incidence-summary">
+          <h2>{{ incidencia.tipo | titlecase }}</h2>
+          <p class="description">{{ incidencia.descripcion }}</p>
+          <ion-badge class="priority-badge" [color]="colorPrioridad(incidencia.prioridad)">
+            Prioridad {{ incidencia.prioridad }}
+          </ion-badge>
         </div>
       </div>
 
-      <div class="card-footer">
-        <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
-        <ion-button size="small" fill="clear" [routerLink]="['/incidencia', idIncidencia(incidencia)]">
-          Ver detalle
-        </ion-button>
+      <div class="meta-list">
+        <p><ion-icon name="location-outline" aria-hidden="true"></ion-icon><span>{{ incidencia.direccion }}</span></p>
+        <p><ion-icon name="map-outline" aria-hidden="true"></ion-icon><span>{{ incidencia.sector }}</span></p>
+        <p>
+          <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+          <span>{{ incidencia.fecha | date: 'mediumDate' }}</span>
+        </p>
       </div>
+
+      <ion-button
+        class="detail-action"
+        expand="block"
+        fill="outline"
+        [routerLink]="['/incidencia', idIncidencia(incidencia)]"
+      >
+        Ver detalle
+      </ion-button>
     </ion-card-content>
   </ion-card>
   } @if (mensajeErrorLocal()) {
   <p class="message error-message" role="alert">{{ mensajeErrorLocal() }}</p>
   } @if (error() && incidencias().length > 0) {
-  <div class="message error-message" role="alert">
-    <p>No se pudo cargar la página de incidencias.</p>
+  <div class="error-state compact" role="alert">
+    <p>No se pudo cargar la siguiente página.</p>
     <ion-button fill="outline" (click)="reintentarSiguientePagina()">Reintentar</ion-button>
   </div>
   } @if (infiniteScrollDisabled() && incidencias().length > 0 && !error()) {
