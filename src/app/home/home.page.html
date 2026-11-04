@@ -5,53 +5,55 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <section class="page-intro dashboard-intro">
-    <span class="eyebrow">CENTRO DE OPERACIONES</span>
-    <h1>Estado de incidencias</h1>
-    <p>Resumen actualizado de los reportes de infraestructura urbana.</p>
-    @if (!cargando() && !error()) {
-    <div class="total-summary"><strong>{{ totalIncidencias() }}</strong><span>reportes registrados</span></div>
-    }
-  </section>
+  <div class="layout-container">
+    <section class="page-intro dashboard-intro">
+      <span class="eyebrow">CENTRO DE OPERACIONES</span>
+      <h1>Estado de incidencias</h1>
+      <p>Resumen actualizado de los reportes de infraestructura urbana.</p>
+      @if (!cargando() && !error()) {
+      <div class="total-summary"><strong>{{ totalIncidencias() }}</strong><span>reportes registrados</span></div>
+      }
+    </section>
 
-  <ion-button class="quick-action" expand="block" routerLink="/nueva-incidencia" aria-label="Registrar incidencia">
-    <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
-    Registrar incidencia
-  </ion-button>
+    <ion-button class="quick-action" expand="block" routerLink="/nueva-incidencia" aria-label="Registrar incidencia">
+      <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
+      Registrar incidencia
+    </ion-button>
 
-  @if (cargando()) {
-  <div class="feedback" role="status">
-    <ion-spinner name="crescent"></ion-spinner>
-    <span>Cargando indicadores…</span>
-  </div>
-  } @else if (error()) {
-  <ion-card color="danger">
-    <ion-card-content>
-      <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
-      No se pudieron cargar los indicadores.
-      <ion-button fill="clear" color="light" (click)="reintentar()">Reintentar</ion-button>
-    </ion-card-content>
-  </ion-card>
-  } @else {
-  <div class="summary-grid">
-    @for (estado of estados; track estado) {
-    <ion-card [class]="'status-card status-' + estado.replace(' ', '-')">
-      <ion-card-header>
-        <ion-icon [name]="iconoEstado(estado)" aria-hidden="true"></ion-icon>
-        <ion-card-title>{{ estado | titlecase }}</ion-card-title>
-      </ion-card-header>
+    @if (cargando()) {
+    <div class="feedback" role="status">
+      <ion-spinner name="crescent"></ion-spinner>
+      <span>Cargando indicadores…</span>
+    </div>
+    } @else if (error()) {
+    <ion-card color="danger">
       <ion-card-content>
-        <div class="card-total">
-          <strong>{{ totales()[estado] }}</strong>
-          <span>{{ porcentaje(estado) }}% del total</span>
-        </div>
-        <ion-progress-bar
-          [color]="estado === 'pendiente' ? 'warning' : estado === 'resuelta' ? 'success' : 'primary'"
-          [value]="porcentaje(estado) / 100"
-        ></ion-progress-bar>
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        No se pudieron cargar los indicadores.
+        <ion-button fill="clear" color="light" (click)="reintentar()">Reintentar</ion-button>
       </ion-card-content>
     </ion-card>
+    } @else {
+    <div class="summary-grid">
+      @for (estado of estados; track estado) {
+      <ion-card [class]="'status-card status-' + estado.replace(' ', '-')">
+        <ion-card-header>
+          <ion-icon [name]="iconoEstado(estado)" aria-hidden="true"></ion-icon>
+          <ion-card-title>{{ estado | titlecase }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="card-total">
+            <strong>{{ totales()[estado] }}</strong>
+            <span>{{ porcentaje(estado) }}% del total</span>
+          </div>
+          <ion-progress-bar
+            [color]="estado === 'pendiente' ? 'warning' : estado === 'resuelta' ? 'success' : 'primary'"
+            [value]="porcentaje(estado) / 100"
+          ></ion-progress-bar>
+        </ion-card-content>
+      </ion-card>
+      }
+    </div>
     }
   </div>
-  }
 </ion-content>
