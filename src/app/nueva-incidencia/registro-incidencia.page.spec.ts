@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
+import type { NuevaIncidencia } from '../models/incidencia.model';
+import { CloudinaryService } from '../services/cloudinary.service';
 import { IncidenciasService } from '../services/incidencias.service';
 import { StorageService } from '../services/storage.service';
 import { WeatherService } from '../services/weather.service';
@@ -10,14 +12,24 @@ import { WeatherService } from '../services/weather.service';
 import { RegistroIncidenciaPage } from './registro-incidencia.page';
 
 describe('RegistroIncidenciaPage', () => {
+  let crearIncidencia: ReturnType<typeof vi.fn>;
+  let subirImagen: ReturnType<typeof vi.fn>;
+
   beforeEach(async () => {
+    crearIncidencia = vi.fn((_incidencia: NuevaIncidencia) => of({ id: 'INC-TEST' }));
+    subirImagen = vi.fn((_imagen: string) => of('https://res.cloudinary.com/test/image/upload/evidencia.jpg'));
+
     await TestBed.configureTestingModule({
       imports: [RegistroIncidenciaPage],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'incidencias', children: [] }]),
         {
           provide: IncidenciasService,
-          useValue: { crearIncidencia: () => of({ id: 'INC-TEST' }) },
+          useValue: { crearIncidencia },
+        },
+        {
+          provide: CloudinaryService,
+          useValue: { subirImagen },
         },
         {
           provide: StorageService,
@@ -40,7 +52,16 @@ describe('RegistroIncidenciaPage', () => {
               }),
           },
         },
-        { provide: AlertController, useValue: { create: () => Promise.resolve({ present: () => undefined }) } },
+        {
+          provide: AlertController,
+          useValue: {
+            create: () =>
+              Promise.resolve({
+                present: () => undefined,
+                onDidDismiss: () => Promise.resolve({ role: 'confirm' }),
+              }),
+          },
+        },
       ],
     }).compileComponents();
   });
@@ -71,5 +92,67 @@ describe('RegistroIncidenciaPage', () => {
     page.form.controls.tipo.setValue('luminarias dañadas');
     page.form.controls.latitud.setValue(null);
     expect(page.form.controls.latitud.valid).toBe(true);
+  });
+
+  it('uploads the photo before creating the incidence with its public URL', async () => {
+    const fixture = TestBed.createComponent(RegistroIncidenciaPage);
+    const page = fixture.componentInstance;
+    page.form.patchValue({
+      tipo: 'luminarias dañadas',
+      descripcion: 'Luminaria apagada.',
+      direccion: 'Av. Amazonas',
+      sector: 'Iñaquito',
+      prioridad: 'alta',
+      fotografia: 'data:image/jpeg;base64,abc',
+    });
+
+    await page.registrar();
+
+    expect(subirImagen).toHaveBeenCalledWith('data:image/jpeg;base64,abc');
+    expect(crearIncidencia).toHaveBeenCalledOnce();
+    expect(subirImagen.mock.invocationCallOrder[0]).toBeLessThan(crearIncidencia.mock.invocationCallOrder[0]);
+    expect(crearIncidencia.mock.calls[0][0].fotografia).toBe(
+      'https://res.cloudinary.com/test/image/upload/evidencia.jpg',
+    );
+    expect(page.form.controls.fotografia.value).toBe('https://res.cloudinary.com/test/image/upload/evidencia.jpg');
+  });
+
+  it('does not create a high-priority incidence when photo upload fails', async () => {
+    subirImagen.mockReturnValue(throwError(() => new Error('Upload failed')));
+    const fixture = TestBed.createComponent(RegistroIncidenciaPage);
+    const page = fixture.componentInstance;
+    page.form.patchValue({
+      tipo: 'luminarias dañadas',
+      descripcion: 'Luminaria apagada.',
+      direccion: 'Av. Amazonas',
+      sector: 'Iñaquito',
+      prioridad: 'alta',
+      fotografia: 'data:image/jpeg;base64,abc',
+    });
+
+    await page.registrar();
+
+    expect(crearIncidencia).not.toHaveBeenCalled();
+    expect(page.error).toContain('fotografía obligatoria');
+    expect(page.guardando).toBe(false);
+  });
+
+  it('lets the user save an optional-photo incidence without the photo after upload failure', async () => {
+    subirImagen.mockReturnValue(throwError(() => new Error('Upload failed')));
+    const fixture = TestBed.createComponent(RegistroIncidenciaPage);
+    const page = fixture.componentInstance;
+    page.form.patchValue({
+      tipo: 'luminarias dañadas',
+      descripcion: 'Luminaria apagada.',
+      direccion: 'Av. Amazonas',
+      sector: 'Iñaquito',
+      prioridad: 'media',
+      fotografia: 'data:image/jpeg;base64,abc',
+    });
+
+    await page.registrar();
+    await vi.waitFor(() => expect(crearIncidencia).toHaveBeenCalledOnce());
+
+    expect(crearIncidencia.mock.calls[0][0].fotografia).toBe('');
   });
 });

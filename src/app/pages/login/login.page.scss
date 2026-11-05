@@ -1,0 +1,84 @@
+.auth-content {
+  --background: var(--app-background);
+}
+
+.auth-shell {
+  width: min(100%, 440px);
+  margin: clamp(24px, 8vh, 80px) auto;
+}
+
+.auth-heading {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.brand-mark {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--ion-color-primary);
+  color: white;
+  font-size: 2rem;
+  box-shadow: 0 8px 20px rgb(21 94 239 / 20%);
+}
+
+.eyebrow {
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+.auth-heading h1 {
+  margin: 8px 0;
+  color: var(--app-text);
+  font-size: clamp(1.8rem, 7vw, 2.3rem);
+}
+
+.auth-heading p {
+  margin: 0 auto;
+  max-width: 22rem;
+  color: var(--app-muted);
+}
+
+.auth-card {
+  padding: clamp(18px, 5vw, 28px);
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: var(--ion-background-color);
+  box-shadow: 0 10px 28px rgb(23 39 61 / 8%);
+}
+
+.auth-field {
+  --background: var(--app-background);
+  --border-radius: 12px;
+  --padding-start: 14px;
+  margin-top: 12px;
+  border-radius: 12px;
+}
+
+.field-error {
+  margin: 6px 12px 0;
+  color: var(--ion-color-danger);
+  font-size: 0.82rem;
+}
+
+.submit-button {
+  min-height: 50px;
+  margin: 24px 0 8px;
+}
+
+.auth-switch {
+  margin: 18px 0 0;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.auth-switch a {
+  color: var(--ion-color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}

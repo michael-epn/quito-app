@@ -14,55 +14,94 @@
     <span>Cargando detalle…</span>
   </div>
   } @else if (error() || incidencia === null) {
-  <div class="feedback" role="alert">
-    <p>No se encontró la incidencia o no se pudo consultar.</p>
+  <div class="error-state" role="alert">
+    <ion-icon name="alert-circle-outline" color="danger" aria-hidden="true"></ion-icon>
+    <h2>No se encontró la incidencia</h2>
+    <p>No se pudo consultar el reporte. Revisa tu conexión e inténtalo nuevamente.</p>
     <ion-button routerLink="/incidencias" fill="outline">Volver al listado</ion-button>
   </div>
   } @else {
-  <ion-card>
+  <section class="detail-hero">
     @if (incidencia.fotografia) {
-    <ion-img [src]="incidencia.fotografia" [alt]="'Fotografía de ' + incidencia.tipo"></ion-img>
+    <img class="hero-image" [src]="incidencia.fotografia" [alt]="'Fotografía de ' + incidencia.tipo" />
+    } @else {
+    <div class="hero-placeholder">
+      <ion-icon name="image-outline" aria-hidden="true"></ion-icon>
+      <span>Sin evidencia fotográfica</span>
+    </div>
     }
-    <ion-card-content>
-      <div class="title-row">
-        <div>
-          <p class="codigo">Código {{ incidencia.codigo || incidencia.id }}</p>
-          <h1>{{ incidencia.tipo | titlecase }}</h1>
-        </div>
-        <ion-button
-          fill="clear"
-          [attr.aria-label]="seguimiento ? 'Quitar de seguimiento' : 'Marcar para seguimiento'"
-          (click)="alternarSeguimiento()"
-        >
-          <ion-icon
-            slot="icon-only"
-            [name]="seguimiento ? 'bookmark' : 'bookmark-outline'"
-            aria-hidden="true"
-          ></ion-icon>
-        </ion-button>
-      </div>
+    <div class="hero-overlay">
+      <ion-chip color="light">{{ incidencia.codigo || incidencia.id }}</ion-chip>
+      <h1>{{ incidencia.tipo | titlecase }}</h1>
+    </div>
+    <ion-button
+      class="hero-bookmark"
+      fill="solid"
+      color="light"
+      [attr.aria-label]="seguimiento ? 'Quitar de seguimiento' : 'Marcar para seguimiento'"
+      (click)="alternarSeguimiento()"
+    >
+      <ion-icon slot="icon-only" [name]="seguimiento ? 'bookmark' : 'bookmark-outline'" aria-hidden="true"></ion-icon>
+    </ion-button>
+  </section>
 
-      <p><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
-      <p><strong>Dirección:</strong> {{ incidencia.direccion }}</p>
-      <p><strong>Sector:</strong> {{ incidencia.sector }}</p>
-      <p><strong>Fecha:</strong> {{ incidencia.fecha | date: 'mediumDate' }}</p>
-      <p>
-        <strong>Estado:</strong>
-        <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
-      </p>
-      <p><strong>Prioridad:</strong> {{ incidencia.prioridad | titlecase }}</p>
-      @if (coordenadasDisponibles()) {
-      <p><strong>Latitud:</strong> {{ incidencia.latitud }}</p>
-      <p><strong>Longitud:</strong> {{ incidencia.longitud }}</p>
-      }
-      <p><strong>Observación registrada:</strong> {{ incidencia.observacion || 'Sin observaciones' }}</p>
+  <section class="detail-status-row">
+    <ion-badge [color]="colorEstado(incidencia.estado)">{{ incidencia.estado | titlecase }}</ion-badge>
+    <ion-badge [color]="colorPrioridad(incidencia.prioridad)">Prioridad {{ incidencia.prioridad }}</ion-badge>
+  </section>
+
+  <ion-card class="detail-card">
+    <ion-card-content>
+      <h2>Datos del reporte</h2>
+      <p class="report-description">{{ incidencia.descripcion }}</p>
+      <ion-grid class="metadata-grid">
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <div class="metadata-item">
+              <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+              <div><span>Dirección</span><strong>{{ incidencia.direccion }}</strong></div>
+            </div>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <div class="metadata-item">
+              <ion-icon name="map-outline" aria-hidden="true"></ion-icon>
+              <div><span>Sector</span><strong>{{ incidencia.sector }}</strong></div>
+            </div>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <div class="metadata-item">
+              <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+              <div><span>Fecha del reporte</span><strong>{{ incidencia.fecha | date: 'mediumDate' }}</strong></div>
+            </div>
+          </ion-col>
+          @if (coordenadasDisponibles()) {
+          <ion-col size="12" size-md="6">
+            <div class="metadata-item">
+              <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>
+              <div>
+                <span>Coordenadas</span>
+                <strong>{{ incidencia.latitud }}, {{ incidencia.longitud }}</strong>
+              </div>
+            </div>
+          </ion-col>
+          }
+        </ion-row>
+      </ion-grid>
     </ion-card-content>
   </ion-card>
 
-  @if (estadosPermitidos().length > 0) {
-  <ion-card>
+  <ion-card class="detail-card observation-card">
     <ion-card-content>
-      <h2>Actualizar estado</h2>
+      <h2>Observación registrada</h2>
+      <p>{{ incidencia.observacion || 'Sin observaciones registradas.' }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="state-card">
+    <ion-card-content>
+      @if (estadosPermitidos().length > 0) {
+      <h2>Gestión del estado</h2>
+      <p class="section-hint">Actualiza el avance del trabajo realizado.</p>
       <form [formGroup]="form" (ngSubmit)="confirmarCambioEstado()">
         <ion-item>
           <ion-select
@@ -100,24 +139,21 @@
             labelPlacement="stacked"
             formControlName="observacion"
             rows="3"
+            placeholder="Añade notas para el equipo (opcional)"
           ></ion-textarea>
         </ion-item>
         } @if (mensajeError) {
         <p class="error-message" role="alert">{{ mensajeError }}</p>
         }
-
         <ion-button expand="block" type="submit" [disabled]="guardando">
           {{ guardando ? 'Actualizando…' : 'Confirmar cambio' }}
         </ion-button>
       </form>
+      } @else {
+      <h2>Incidencia resuelta</h2>
+      <p>Este reporte está cerrado y no se permiten más cambios de estado.</p>
+      }
     </ion-card-content>
   </ion-card>
-  } @else {
-  <ion-card color="success">
-    <ion-card-content>
-      Esta incidencia está resuelta. No se permiten más cambios de estado.
-      <p><strong>Observación registrada:</strong> {{ incidencia.observacion || 'Sin observaciones' }}</p>
-    </ion-card-content>
-  </ion-card>
-  } }
+  }
 </ion-content>

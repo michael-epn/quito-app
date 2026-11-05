@@ -1,3 +1,133 @@
+.page-intro {
+  padding: 8px 4px 0;
+}
+
+.eyebrow {
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.card-heading,
+.card-identifiers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-heading {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-identifiers {
+  flex-wrap: wrap;
+}
+
+.card-identifiers ion-chip {
+  height: 30px;
+  margin: 0;
+  font-weight: 750;
+}
+
+.bookmark-button {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  --border-radius: 50%;
+}
+
+.bookmark-button ion-icon {
+  font-size: 1.35rem;
+}
+
+.incidence-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.thumbnail,
+.photo-placeholder {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 88px;
+  border-radius: 12px;
+}
+
+.thumbnail {
+  object-fit: cover;
+  background: var(--app-background);
+}
+
+.photo-placeholder {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 5px;
+  background: #eef2f6;
+  color: var(--app-muted);
+  font-size: 0.7rem;
+  font-weight: 650;
+  text-align: center;
+}
+
+.photo-placeholder ion-icon {
+  font-size: 1.75rem;
+}
+
+.incidence-summary {
+  min-width: 0;
+}
+
+.incidence-summary h2 {
+  margin: 0 0 6px;
+  color: var(--app-text);
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+.description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 8px;
+  color: var(--app-muted);
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.priority-badge {
+  display: inline-flex;
+}
+
+.meta-list {
+  display: grid;
+  gap: 7px;
+  margin: 16px 0 12px;
+  color: var(--app-muted);
+}
+
+.meta-list p {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.meta-list ion-icon {
+  flex: 0 0 auto;
+  color: var(--ion-color-primary);
+  font-size: 1.1rem;
+}
+
+.detail-action {
+  margin: 8px 0 0;
+}
+
 .message {
   display: flex;
   align-items: center;
@@ -12,49 +142,18 @@
   color: var(--ion-color-danger);
 }
 
-.card-heading,
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.card-heading h2 {
-  margin: 0.25rem 0;
-  font-size: 1.05rem;
-}
-
-.codigo {
-  margin: 0;
-  color: var(--ion-color-medium);
-  font-size: 0.8rem;
-}
-
-.incidencia-body {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.incidencia-body p {
-  margin: 0.35rem 0;
-}
-
-.thumbnail {
-  width: 5rem;
-  height: 5rem;
-  flex: 0 0 5rem;
-  object-fit: cover;
-  border-radius: 0.5rem;
-}
-
-.card-footer {
-  margin-top: 0.75rem;
+.compact {
+  min-height: 100px;
 }
 
 .end-message {
   padding: 1rem;
-  color: var(--ion-color-medium);
+  color: var(--app-muted);
   text-align: center;
+}
+
+@media (min-width: 600px) {
+  .incidence-card {
+    margin-block: 16px;
+  }
 }

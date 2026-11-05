@@ -19,7 +19,6 @@ import {
   IonImg,
   IonInput,
   IonItem,
-  IonLabel,
   IonSelect,
   IonSelectOption,
   IonSpinner,
@@ -28,8 +27,29 @@ import {
   IonToolbar,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { cameraOutline, locateOutline } from 'ionicons/icons';
-import { combineLatest, debounceTime, distinctUntilChanged, firstValueFrom, startWith } from 'rxjs';
+import {
+  alertCircleOutline,
+  cameraOutline,
+  cloudyOutline,
+  documentTextOutline,
+  locateOutline,
+  navigateOutline,
+  rainyOutline,
+} from 'ionicons/icons';
+import {
+  catchError,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  firstValueFrom,
+  from,
+  map,
+  of,
+  startWith,
+  switchMap,
+  throwError,
+} from 'rxjs';
 
 import type {
   EstadoIncidencia,
@@ -37,6 +57,7 @@ import type {
   PrioridadIncidencia,
   TipoIncidencia,
 } from '../models/incidencia.model';
+import { CloudinaryService } from '../services/cloudinary.service';
 import { IncidenciasService } from '../services/incidencias.service';
 import { StorageService } from '../services/storage.service';
 import { WeatherService } from '../services/weather.service';
@@ -80,7 +101,6 @@ interface FormularioRegistro {
     IonCardContent,
     IonImg,
     IonSpinner,
-    IonLabel,
     ReactiveFormsModule,
     TitleCasePipe,
   ],
@@ -89,6 +109,7 @@ export class RegistroIncidenciaPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   private readonly incidenciasService = inject(IncidenciasService);
+  private readonly cloudinaryService = inject(CloudinaryService);
   private readonly storageService = inject(StorageService);
   private readonly weatherService = inject(WeatherService);
   private readonly alertController = inject(AlertController);
@@ -114,7 +135,15 @@ export class RegistroIncidenciaPage {
   private solicitudClima = 0;
 
   constructor() {
-    addIcons({ cameraOutline, locateOutline });
+    addIcons({
+      alertCircleOutline,
+      cameraOutline,
+      cloudyOutline,
+      documentTextOutline,
+      locateOutline,
+      navigateOutline,
+      rainyOutline,
+    });
     this.aplicarValidadoresDinamicos();
     this.escucharCambiosDelFormulario();
     this.escucharCoordenadas();
@@ -246,21 +275,62 @@ export class RegistroIncidenciaPage {
       estado: 'pendiente',
     };
 
+    let falloSubidaFotografia = false;
+    const fotografia = incidencia.fotografia;
+    const incidenciaConFotografia$ =
+      fotografia && !this.esUrlCloudinary(fotografia)
+        ? this.cloudinaryService.subirImagen(fotografia).pipe(
+            map((secureUrl) => {
+              this.form.controls.fotografia.setValue(secureUrl, { emitEvent: false });
+              try {
+                this.storageService.guardarBorrador(this.form.getRawValue());
+              } catch (error) {
+                console.error('No se pudo actualizar el borrador con la URL de Cloudinary.', error);
+              }
+              return { ...incidencia, fotografia: secureUrl };
+            }),
+            catchError((error: unknown) => {
+              falloSubidaFotografia = true;
+              if (incidencia.prioridad === 'alta') {
+                return throwError(() => error);
+              }
+
+              return from(this.confirmarGuardarSinFotografia()).pipe(
+                switchMap((confirmado) =>
+                  confirmado
+                    ? of({ ...incidencia, fotografia: '' })
+                    : throwError(() => new Error('Se canceló el registro sin la fotografía opcional.')),
+                ),
+              );
+            }),
+          )
+        : of(incidencia);
+
     this.guardando = true;
-    this.incidenciasService.crearIncidencia(incidencia).subscribe({
-      next: () => {
-        try {
-          this.storageService.limpiarBorrador();
-        } catch (error) {
-          console.error('La incidencia se registró, pero no se pudo limpiar el borrador local.', error);
-        }
-        void this.router.navigate(['/incidencias']);
-      },
-      error: () => {
-        this.guardando = false;
-        this.error = 'No se pudo registrar la incidencia. El borrador se conserva en este dispositivo.';
-      },
-    });
+    incidenciaConFotografia$
+      .pipe(
+        switchMap((incidenciaLista) => this.incidenciasService.crearIncidencia(incidenciaLista)),
+        finalize(() => {
+          this.guardando = false;
+        }),
+      )
+      .subscribe({
+        next: () => {
+          try {
+            this.storageService.limpiarBorrador();
+          } catch (error) {
+            console.error('La incidencia se registró, pero no se pudo limpiar el borrador local.', error);
+          }
+          void this.router.navigate(['/incidencias']);
+        },
+        error: () => {
+          this.error = falloSubidaFotografia
+            ? incidencia.prioridad === 'alta'
+              ? 'No se pudo subir la fotografía obligatoria. La incidencia no se guardó; inténtalo nuevamente.'
+              : 'No se registró la incidencia. Puedes volver a intentarlo con la fotografía o sin ella.'
+            : 'No se pudo registrar la incidencia. El borrador se conserva en este dispositivo.';
+        },
+      });
   }
 
   private crearFormulario(): FormGroup<FormularioRegistro> {
@@ -284,6 +354,24 @@ export class RegistroIncidenciaPage {
     const mes = String(ahora.getMonth() + 1).padStart(2, '0');
     const dia = String(ahora.getDate()).padStart(2, '0');
     return `${ahora.getFullYear()}-${mes}-${dia}`;
+  }
+
+  private esUrlCloudinary(fotografia: string): boolean {
+    return /^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//.test(fotografia);
+  }
+
+  private async confirmarGuardarSinFotografia(): Promise<boolean> {
+    const alert = await this.alertController.create({
+      header: 'No se pudo subir la fotografía',
+      message: 'La evidencia es opcional para esta prioridad. ¿Quieres guardar la incidencia sin fotografía?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        { text: 'Guardar sin fotografía', role: 'confirm' },
+      ],
+    });
+    await alert.present();
+    const resultado = await alert.onDidDismiss();
+    return resultado.role === 'confirm';
   }
 
   private aplicarValidadoresDinamicos(): void {

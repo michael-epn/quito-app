@@ -1,2 +1,64 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+:root {
+  color-scheme: light;
+
+  --ion-color-primary: #155eef;
+  --ion-color-primary-rgb: 21, 94, 239;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1253d2;
+  --ion-color-primary-tint: #2c6ff1;
+
+  --ion-color-secondary: #344054;
+  --ion-color-secondary-rgb: 52, 64, 84;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #2e384a;
+  --ion-color-secondary-tint: #485368;
+
+  --ion-color-success: #16803c;
+  --ion-color-success-rgb: 22, 128, 60;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #137035;
+  --ion-color-success-tint: #2d8c50;
+
+  --ion-color-warning: #f0a000;
+  --ion-color-warning-rgb: 240, 160, 0;
+  --ion-color-warning-contrast: #1d2939;
+  --ion-color-warning-contrast-rgb: 29, 41, 57;
+  --ion-color-warning-shade: #d38d00;
+  --ion-color-warning-tint: #f2aa1a;
+
+  --ion-color-danger: #c62828;
+  --ion-color-danger-rgb: 198, 40, 40;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #ae2323;
+  --ion-color-danger-tint: #ce3e3e;
+
+  --ion-color-medium: #667085;
+  --ion-color-medium-rgb: 102, 112, 133;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #5a6275;
+  --ion-color-medium-tint: #758096;
+
+  --ion-color-light: #f2f4f7;
+  --ion-color-light-rgb: 242, 244, 247;
+  --ion-color-light-contrast: #1d2939;
+  --ion-color-light-contrast-rgb: 29, 41, 57;
+  --ion-color-light-shade: #d5d7da;
+  --ion-color-light-tint: #f3f5f8;
+
+  --app-background: #f4f6fa;
+  --app-surface: #ffffff;
+  --app-text: #182230;
+  --app-muted: #475467;
+  --app-border: #d0d5dd;
+  --app-radius: 14px;
+  --app-shadow: 0 3px 14px rgb(16 24 40 / 8%);
+  --ion-background-color: var(--app-background);
+  --ion-text-color: var(--app-text);
+  --ion-toolbar-background: var(--app-surface);
+  --ion-toolbar-color: var(--app-text);
+}

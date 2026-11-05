@@ -14,8 +14,8 @@ import {
   IonCardContent,
   IonContent,
   IonHeader,
+  IonGrid,
   IonIcon,
-  IonImg,
   IonItem,
   IonSelect,
   IonSelectOption,
@@ -23,10 +23,22 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  IonRow,
+  IonCol,
+  IonChip,
   ToastController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { bookmark, bookmarkOutline } from 'ionicons/icons';
+import {
+  alertCircleOutline,
+  bookmark,
+  bookmarkOutline,
+  calendarOutline,
+  imageOutline,
+  locationOutline,
+  mapOutline,
+  navigateOutline,
+} from 'ionicons/icons';
 import { finalize } from 'rxjs';
 
 import { identificadoresIncidencia } from '../models/incidencia.model';
@@ -50,7 +62,10 @@ const OBSERVACION_REQUERIDA = Validators.pattern(/.*\S.*/);
     IonCard,
     IonCardContent,
     IonBadge,
-    IonImg,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonChip,
     IonItem,
     IonSelect,
     IonSelectOption,
@@ -86,7 +101,16 @@ export class DetalleIncidenciaPage implements OnInit {
   mensajeError = '';
 
   constructor() {
-    addIcons({ bookmark, bookmarkOutline });
+    addIcons({
+      alertCircleOutline,
+      bookmark,
+      bookmarkOutline,
+      calendarOutline,
+      imageOutline,
+      locationOutline,
+      mapOutline,
+      navigateOutline,
+    });
   }
 
   ngOnInit(): void {
@@ -231,6 +255,17 @@ export class DetalleIncidenciaPage implements OnInit {
         return 'primary';
       case 'resuelta':
         return 'success';
+    }
+  }
+
+  colorPrioridad(prioridad: Incidencia['prioridad']): string {
+    switch (prioridad) {
+      case 'alta':
+        return 'danger';
+      case 'media':
+        return 'warning';
+      case 'baja':
+        return 'medium';
     }
   }
 

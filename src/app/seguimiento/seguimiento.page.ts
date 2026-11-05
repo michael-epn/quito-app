@@ -1,6 +1,7 @@
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import type { OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   IonBadge,
   IonButton,
@@ -8,10 +9,28 @@ import {
   IonCardContent,
   IonContent,
   IonHeader,
-  IonSpinner,
+  IonIcon,
+  IonChip,
+  IonLabel,
+  IonSkeletonText,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  alertCircleOutline,
+  bookmark,
+  bookmarkOutline,
+  calendarOutline,
+  clipboardOutline,
+  constructOutline,
+  flashOutline,
+  leafOutline,
+  locationOutline,
+  mapOutline,
+  pricetagOutline,
+  waterOutline,
+} from 'ionicons/icons';
 import { finalize } from 'rxjs';
 
 import { identificadoresIncidencia } from '../models/incidencia.model';
@@ -32,7 +51,11 @@ import { StorageService } from '../services/storage.service';
     IonCardContent,
     IonBadge,
     IonButton,
-    IonSpinner,
+    IonChip,
+    IonIcon,
+    IonLabel,
+    IonSkeletonText,
+    RouterLink,
     DatePipe,
     TitleCasePipe,
   ],
@@ -47,6 +70,23 @@ export class SeguimientoPage implements OnInit {
   readonly cargando = signal(false);
   readonly error = signal(false);
   readonly mensajeError = signal('');
+
+  constructor() {
+    addIcons({
+      alertCircleOutline,
+      bookmark,
+      bookmarkOutline,
+      calendarOutline,
+      clipboardOutline,
+      constructOutline,
+      flashOutline,
+      leafOutline,
+      locationOutline,
+      mapOutline,
+      pricetagOutline,
+      waterOutline,
+    });
+  }
 
   ngOnInit(): void {
     this.cargarSeguimiento();
@@ -134,6 +174,32 @@ export class SeguimientoPage implements OnInit {
 
   idIncidencia(incidencia: Incidencia): string {
     return String(incidencia.id).trim();
+  }
+
+  iconoTipo(tipo: Incidencia['tipo']): string {
+    switch (tipo) {
+      case 'luminarias dañadas':
+        return 'flash-outline';
+      case 'baches':
+        return 'construct-outline';
+      case 'señalización deteriorada':
+        return 'alert-circle-outline';
+      case 'alcantarillas obstruidas':
+        return 'water-outline';
+      case 'daños en parques':
+        return 'leaf-outline';
+    }
+  }
+
+  colorPrioridad(prioridad: Incidencia['prioridad']): string {
+    switch (prioridad) {
+      case 'alta':
+        return 'danger';
+      case 'media':
+        return 'warning';
+      case 'baja':
+        return 'medium';
+    }
   }
 
   colorEstado(estado: EstadoIncidencia): string {
