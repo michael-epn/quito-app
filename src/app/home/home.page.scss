@@ -127,3 +127,18 @@ ion-progress-bar {
   margin: 0 auto;
   width: 100%;
 }
+
+.user-email {
+  max-width: min(34vw, 220px);
+  overflow: hidden;
+  color: var(--app-muted);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .user-email {
+    display: none;
+  }
+}

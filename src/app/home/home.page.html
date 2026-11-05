@@ -1,6 +1,15 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Quito Incidencias</ion-title>
+    <ion-buttons slot="end">
+      @if (usuarioActual()?.email; as email) {
+      <span class="user-email">{{ email }}</span>
+      }
+      <ion-button aria-label="Cerrar sesión" (click)="cerrarSesion()">
+        <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+        Salir
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Quito Incidencias</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding auth-content">
+  <main class="auth-shell">
+    <section class="auth-heading">
+      <div class="brand-mark" aria-hidden="true">
+        <ion-icon name="locate-outline"></ion-icon>
+      </div>
+      <span class="eyebrow">INSPECCIÓN URBANA</span>
+      <h1>Bienvenido</h1>
+      <p>Inicia sesión para gestionar los reportes de infraestructura.</p>
+    </section>
+
+    <form class="auth-card" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <ion-item class="auth-field" lines="none">
+        <ion-input
+          label="Correo electrónico"
+          label-placement="stacked"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          formControlName="email"
+          placeholder="inspector@ejemplo.com"
+        ></ion-input>
+      </ion-item>
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+      <p class="field-error" role="alert">Ingresa un correo electrónico válido.</p>
+      }
+
+      <ion-item class="auth-field" lines="none">
+        <ion-input
+          label="Contraseña"
+          label-placement="stacked"
+          [type]="passwordVisible() ? 'text' : 'password'"
+          autocomplete="current-password"
+          formControlName="password"
+          placeholder="Mínimo 6 caracteres"
+        >
+          <ion-button
+            slot="end"
+            fill="clear"
+            type="button"
+            [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            (click)="togglePasswordVisibility()"
+          >
+            <ion-icon [name]="passwordVisible() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-input>
+      </ion-item>
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+      <p class="field-error" role="alert">La contraseña debe tener al menos 6 caracteres.</p>
+      }
+
+      <ion-button class="submit-button" expand="block" type="submit" [disabled]="loading()">
+        @if (loading()) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+        Verificando... } @else {
+        <ion-icon name="log-in-outline" slot="start"></ion-icon>
+        Iniciar sesión }
+      </ion-button>
+
+      <p class="auth-switch">
+        ¿Aún no tienes cuenta?
+        <a routerLink="/register">Crear cuenta</a>
+      </p>
+    </form>
+  </main>
+
+  <ion-toast
+    [isOpen]="toastOpen()"
+    [message]="toastMessage()"
+    color="danger"
+    duration="3500"
+    (didDismiss)="toastOpen.set(false)"
+  ></ion-toast>
+</ion-content>

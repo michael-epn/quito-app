@@ -1,7 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import type { OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonCard,
@@ -11,16 +11,25 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonButtons,
   IonProgressBar,
   IonSpinner,
   IonTitle,
+  ToastController,
   IonToolbar,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, alertCircleOutline, checkmarkCircleOutline, constructOutline } from 'ionicons/icons';
+import {
+  addOutline,
+  alertCircleOutline,
+  checkmarkCircleOutline,
+  constructOutline,
+  logOutOutline,
+} from 'ionicons/icons';
 import { finalize } from 'rxjs';
 
 import type { EstadoIncidencia, Incidencia } from '../models/incidencia.model';
+import { AuthService } from '../services/auth.service';
 import { IncidenciasService } from '../services/incidencias.service';
 
 @Component({
@@ -30,6 +39,7 @@ import { IncidenciasService } from '../services/incidencias.service';
   imports: [
     IonHeader,
     IonToolbar,
+    IonButtons,
     IonTitle,
     IonContent,
     IonCard,
@@ -46,6 +56,10 @@ import { IncidenciasService } from '../services/incidencias.service';
 })
 export class HomePage implements OnInit {
   private readonly incidenciasService = inject(IncidenciasService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly toastController = inject(ToastController);
+  readonly usuarioActual = this.authService.user;
   private primeraEntrada = true;
   private readonly cargaEnCurso = signal(false);
 
@@ -59,7 +73,7 @@ export class HomePage implements OnInit {
   readonly error = signal(false);
 
   constructor() {
-    addIcons({ addOutline, alertCircleOutline, checkmarkCircleOutline, constructOutline });
+    addIcons({ addOutline, alertCircleOutline, checkmarkCircleOutline, constructOutline, logOutOutline });
   }
 
   ngOnInit(): void {
@@ -77,6 +91,20 @@ export class HomePage implements OnInit {
 
   reintentar(): void {
     this.cargarIndicadores();
+  }
+
+  async cerrarSesion(): Promise<void> {
+    try {
+      await this.authService.logout();
+      await this.router.navigateByUrl('/login', { replaceUrl: true });
+    } catch (error) {
+      const toast = await this.toastController.create({
+        message: error instanceof Error ? error.message : 'No se pudo cerrar sesión.',
+        color: 'danger',
+        duration: 3500,
+      });
+      await toast.present();
+    }
   }
 
   porcentaje(estado: EstadoIncidencia): number {

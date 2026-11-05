@@ -1,8 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+
+import { AuthService } from '../services/auth.service';
 
 import { HomePage } from './home.page';
 
@@ -14,7 +18,13 @@ describe('HomePage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HomePage],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        { provide: AuthService, useValue: { user: signal(null), logout: vi.fn() } },
+        { provide: ToastController, useValue: { create: vi.fn() } },
+      ],
     }).compileComponents();
     httpTestingController = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(HomePage);
